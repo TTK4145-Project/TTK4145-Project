@@ -18,7 +18,12 @@ procedure NSynch is
 
    task body Worker is
    begin
-      --  Fill in
+      loop
+         Manager.Synchronize;
+         Put("!");
+         Manager.Synchronize;
+         Put(".");
+      end loop;
    end Worker;
 
    Workers : array (1 .. N) of Worker;
