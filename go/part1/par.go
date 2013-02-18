@@ -11,18 +11,19 @@ func main() {
 	go test1(channel)
 	go test2(channel, 5)
 
-	never := make(chan int)
-	<- never
+	test := 0
+
+	for iter := range channel{
+		test += iter
+	}
 }
 
 
 
 func test1(ch chan int) {
-	test := <- ch
 	
-	for test >= 0 {
-		fmt.Println(test)
-		test = <- ch
+	for iter := range ch {
+		fmt.Println(iter)
 	}
 }
 
@@ -32,4 +33,5 @@ func test2(ch chan int, n int) {
 		ch <- i
 	}
 	ch <- -1
+	close (ch)
 }

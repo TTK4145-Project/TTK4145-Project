@@ -1,4 +1,5 @@
 with Ada.Text_IO;
+use Ada.Text_IO;
 
 procedure NSynch is
 
@@ -11,8 +12,10 @@ procedure NSynch is
    end Manager;
 
    protected body Manager is
-      --  Fill in
-   end Manager;
+		entry Synchronize when Synchronize'Count = N is begin
+			null;
+		end Synchronize;
+	end Manager;
 
    task type Worker;
 
