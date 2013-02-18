@@ -16,11 +16,7 @@ func main() {
 	go philler(fork1, fork2)
 
 	for i := 1; i < numOfPhil; i++ {
-		fork3 := make(chan bool)
-		go fork(fork2, fork3)
-		fork2 = fork3
-		go philler(fork2, fork3)
-		fork2 = fork3
+		
 	}
 
 	never := make(chan bool)
@@ -33,9 +29,6 @@ func philler(leftFork chan bool, rightFork chan bool) {
 	for {
 		counter++
 
-		for {
-			<- leftFork
-		}
 	}
 
 	fmt.Println("eating: ", counter)
