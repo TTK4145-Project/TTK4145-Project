@@ -16,11 +16,15 @@ func main() {
 	go proc2(channel, 5)
 	go proc3(channel, 5)
 
-	go reader(out)
+	// go reader(out)
+
+	for iter := range out {
+		fmt.Println(iter)
+	}
 
 	// run you fools 
-	never := make(chan int)
-	<- never
+	//never := make(chan int)
+	//<- never
 }
 
 func server(channel, out chan int) {
