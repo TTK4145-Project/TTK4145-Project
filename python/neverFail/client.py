@@ -14,7 +14,9 @@ class client:
 	udp = None
 	tcp = None
 
-	client_list = dict()
+	client_list = []
+	server = [None, None]
+	my_address = None
 
 	listen_thread = None
 	running = True
@@ -71,7 +73,11 @@ class client:
 		#print "Received:", msg, "from", addr
 
 		if msg != self.broadcast_answer: return 1 # Wrong message received, they are not elevators
-		self.client_list[addr[0]] = conn
+		self.server[0] = addr[0]
+		self.server[1] = conn
+
+		self.my_address = conn.getsockname()[0]
+		print "My address:", self.my_address
 
 		print "Connected"
 
@@ -80,7 +86,7 @@ class client:
 		self.listen_thread.start()
 
 		# Ask for client list
-		conn.send(redundancy.client_request)
+		#conn.send(redundancy.client_request)
 		#clients = conn.recv(self.bufSize)
 		#print pickle.loads(clients)
 
@@ -102,14 +108,15 @@ class client:
 	def message_listener(self):
 		while self.running:
 			sleep(0.1)
-			read, write, error = select.select(self.client_list.values(), [], [], self.timeout)
+			read, write, error = select.select([self.server[1]], [], [], self.timeout)
 
 			if len(read) + len(write) + len(error) != 0: print "Event: ", len(read), len(write), len(error)
 
 			for conn in error:
 				try:
 					index = conn.getpeername()[0]
-					del client_list[index]
+					# TODO: Try to take over
+					#del client_list[index]
 				except: print "Error fail"
 
 			for conn in read:
@@ -119,7 +126,8 @@ class client:
 					if len(msg): print "Received command \"", msg, "\""
 					else:
 						conn.close()
-						del self.client_list[index]
+						# TODO: Try to take over
+						#del self.client_list[index]
 						continue
 
 					# call tricode
@@ -129,16 +137,18 @@ class client:
 							clients = pickle.loads(msg)
 							for client in clients:
 								if not client in self.client_list:
-									self.client_list[client] = None
+									#self.client_list[client] = None
+									pass
 							conn.send(redundancy.ack_prefix + redundancy.client_answer)
-							if redundancy.DEBUG: print "Client list:\n", self.client_list
+							if redundancy.DEBUG: print "Client list:\n", clients
 						except: # Failed to interpret client list
 							pass
 
 				except:
 					print "Read fail"
 					conn.close()
-					del self.client_list[index]
+					# TODO: Try to take over
+					#del self.client_list[index]
 
 	def event_listener(self, event):
 		pass

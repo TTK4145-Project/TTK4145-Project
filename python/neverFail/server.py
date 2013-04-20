@@ -29,6 +29,9 @@ class server:
 
 	receive_buffer = []
 
+	#ack_list
+	#event_list
+
 	def delete(self):
 		self.running = False
 		if self.listen_thread_tcp != None:
@@ -121,14 +124,54 @@ class server:
 			tcp.settimeout(redundancy.timeout)
 			try:
 				tcp.connect((address[0], self.TCPport))
-				self.client_list[address[0]] = tcp
 
 				print "Connected to", address[0]
 				tcp.send(self.broadcast_answer)
+				self.client_list[address[0]] = tcp
 			except:
 				print traceback.print_tb(sys.exc_info()[2])
 				print sys.exc_info()[0]
 				print "Failed to connect to", address[0]
+				continue
+
+			print "Broadcasting new client list"
+			self.lock()
+			fail = True
+			while fail:
+				fail = False
+				for addr in self.client_list.keys():
+					conn = self.client_list[addr]
+					try:
+						conn.send(redundancy.client_answer)
+					except:
+						del self.client_list[addr]
+						fail = True
+						print "Fail broadcast"
+						break
+
+				waiting, failed = [], []
+				for i in range(3):
+					read, write, error = select.select(self.client_list.values(), [], [], 0.1)
+					waiting.extend(read)
+					failed.extend(error)
+					if len(waiting) == len(self.client_list):
+						break
+
+				if len(waiting) == len(self.client_list):
+					for conn in waiting:
+						addr = conn.getpeername()[0]
+						try:
+							msg = conn.recv(redundancy.bufSize)
+							if not msg.startswith(redundancy.ack_prefix): raise 1 # Just fail
+							if not msg[len(redundancy.ack_prefix):].startswith(redundancy.client_answer): raise 1
+
+						except:
+							del self.client_list[addr]
+							fail = True
+							print "Fail broadcast 2"
+
+			self.unlock()
+
 
 	def send_message(self, target, prefix, message):
 		pass
@@ -139,14 +182,7 @@ class server:
 				sleep(0.1)
 				continue
 
-			send_mutex_counter = 0
-			recv_mutex_counter = 0
-			while not self.send_lock.testandset():
-				sleep(0.05) # mutex lock
-				send_mutex_counter += 1
-			while not self.receive_lock.testandset():
-				sleep(0.05) # mutex lock
-				recv_mutex_counter += 1
+			self.lock()
 
 			package = self.send_queue.popleft()
 
@@ -180,11 +216,7 @@ class server:
 				conn.close()
 				del self.client_list[package[0]]
 
-			self.receive_lock.unlock() # mutex release
-			self.send_lock.unlock() # mutex release
-			print "Waited %f seconds for send lock", (send_mutex_counter * 0.05)
-			print "Waited %f seconds for recv lock", (recv_mutex_counter * 0.05)
-
+			self.release()
 
 	def event_received(self, event):
 		pass
@@ -194,4 +226,20 @@ class server:
 
 	def event_listener(self, event):
 		pass
+
+	def lock(self):
+		send_mutex_counter = 0
+		recv_mutex_counter = 0
+		while not self.send_lock.testandset():
+			sleep(0.05) # mutex lock
+			send_mutex_counter += 1
+		while not self.receive_lock.testandset():
+			sleep(0.05) # mutex lock
+			recv_mutex_counter += 1
+		print "Waited %f seconds for send lock" % (send_mutex_counter * 0.05)
+		print "Waited %f seconds for recv lock" % (recv_mutex_counter * 0.05)
+
+	def unlock(self):
+		self.receive_lock.unlock() # mutex release
+		self.send_lock.unlock() # mutex release
 
