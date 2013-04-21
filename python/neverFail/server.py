@@ -28,6 +28,11 @@ class server:
 
 	my_ip = None
 
+	def __init__(self, client_list=[], client_synch=dict(), my_ip=None, elevator=None):
+		for key in client_list: self.client_list[key] = None
+		self.client_synch = client_synch
+		self.my_ip = my_ip
+
 	def delete(self):
 		self.running = False
 		if self.listen_thread_udp != None:
@@ -108,9 +113,9 @@ class server:
 
 				try:
 					# If commands, pad with those in send
-					if not len(self.send_queue[client]): conn.send(redundancy.synchronize_prefix + pickle.dumps(((self.client_list.keys(), self.client_synch),"serialized system here")))
+					if not len(self.send_queue[client]): conn.send(redundancy.synchronize_prefix + pickle.dumps((self.client_synch,"serialized system here")))
 					else: 
-						msg = redundancy.synchronize_prefix + pickle.dumps(((self.client_list, self.client_synch),"serialized system here")) + redundancy.command_prefix
+						msg = redundancy.synchronize_prefix + pickle.dumps((self.client_synch,"serialized system here")) + redundancy.command_prefix
 						for command in self.send_queue[client]:
 							msg += command + redundancy.command_split
 						msg = msg[:-len(redundancy.command_split)]

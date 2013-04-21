@@ -25,6 +25,8 @@ class client:
 
 	send_queue = []
 
+	alive = True
+
 	def delete(self):
 		self.running = False
 		if self.listen_thread != None:
@@ -87,6 +89,7 @@ class client:
 		print "Connected"
 
 		# Enter client code
+		self.running = True
 		self.listen_thread = threading.Thread(target=self.message_listener)
 		self.listen_thread.start()
 
@@ -97,7 +100,6 @@ class client:
 
 		while self.running: self.listen_thread.join(0.5)
 
-		conn.close()
 		return 0
 
 	def client_listener(self, connaddr):
@@ -168,18 +170,34 @@ class client:
 						# Something failed, try to take over?
 						print "Fail inner:", sys.exc_info()[1]
 						print traceback.print_tb(sys.exc_info()[2])
+						self.running = False
+						threading.Thread(target=self.relocate_server).start()
 						continue
 
 
 			except:
 				print "Read fail"
-				sleep(1.0)
-				conn.close()
+				self.running = False
+				threading.Thread(target=self.relocate_server).start()
 				# TODO: Try to take over
 				#del self.client_list[index]
 
-	def event_listener(self, event):
-		pass
+	def relocate_server(self):
+		# First just try to reconnect
+		print "Lost connection, trying to reconnect"
+		status = self.start()
+		if status:
+			# No connection, restore mode
+			client_synch = self.server_synch[0]
+
+			for client in client_synch:
+				if client_synch[client]:
+					if client == self.my_address:
+						alive = False
+					else:
+						status = self.start()
+						if status: print "Failed to connect, trying next in line"
+
 
 
 
