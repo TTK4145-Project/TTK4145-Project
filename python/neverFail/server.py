@@ -29,7 +29,9 @@ class server:
 	my_ip = None
 
 	def __init__(self, client_list=[], client_synch=dict(), my_ip=None, elevator=None):
-		for key in client_list: self.client_list[key] = None
+		for key in client_list:
+			self.client_list[key] = None
+			self.send_queue[key] = []
 		self.client_synch = client_synch
 		self.my_ip = my_ip
 
@@ -77,6 +79,8 @@ class server:
 
 				print "Connected to", address[0]
 				tcp.send(self.broadcast_answer)
+				print "Client_synch:", self.client_synch
+				print "address:", address
 				self.client_synch[address[0]] = False
 				if self.my_ip == None:
 					self.my_ip = tcp.getsockname()[0]

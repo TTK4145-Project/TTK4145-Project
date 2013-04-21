@@ -191,9 +191,9 @@ class client:
 			client_synch = self.server_synch[0]
 
 			for client in client_synch:
-				if client_synch[client]:
+				if client_synch[client] and client != self.server[0]:
 					if client == self.my_address:
-						alive = False
+						self.alive = False
 					else:
 						status = self.start()
 						if status: print "Failed to connect, trying next in line"
