@@ -51,6 +51,7 @@ class client:
 			self.tcp.bind(('', self.TCPport))
 			self.tcp.listen(1)
 		except:
+			print "Already running?"
 			return 2 # Probably already running
 
 
@@ -77,7 +78,7 @@ class client:
 
 		#print "Receiving"
 		msg = conn.recv(self.bufSize)
-		#print "Received:", msg, "from", addr
+		print "Received:", msg, "from", addr
 
 		if msg != self.broadcast_answer: return 1 # Wrong message received, they are not elevators
 		self.server[0] = addr[0]
@@ -87,6 +88,8 @@ class client:
 		print "My address:", self.my_address
 
 		print "Connected"
+
+		self.tcp.close()
 
 		# Enter client code
 		self.running = True
@@ -107,7 +110,12 @@ class client:
 		conn, addr = None, None
 
 		print "Listening"
-		conn, addr = self.tcp.accept()
+		try:
+			conn, addr = self.tcp.accept()
+		except:
+			print "Fail accept:"
+			print sys.exc_info()[0]
+			print traceback.print_tb(sys.exc_info()[2])
 
 		connaddr[0] = conn
 		connaddr[1] = addr
@@ -196,7 +204,7 @@ class client:
 						self.alive = False
 					else:
 						status = self.start()
-						if status: print "Failed to connect, trying next in line"
+						if status: print "Failed to connect, trying next in line", status
 
 
 
