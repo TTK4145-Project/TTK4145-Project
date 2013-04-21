@@ -1,4 +1,4 @@
-import socket, threading, select, pickle
+import socket, threading, select, pickle, sys
 from time import sleep
 from redundancy import redundancy
 
@@ -114,16 +114,21 @@ class client:
 		while self.running:
 			sleep(0.1)
 			try:
+				#print "Server:", self.server
 				read, write, error = select.select([self.server[1]], [], [], self.timeout)
 
-				if len(read): print "Event: ", len(read)
+				if len(read):
+					#print "Event: ", len(read)
+					pass
 				else: continue
 
 				conn = read[0]
 
 				index = conn.getpeername()[0]
 				msg = conn.recv(self.bufSize)
-				if len(msg): print "Received command \"", msg, "\""
+				if len(msg): 
+					#print "Received command \"", msg, "\""
+					pass
 				else:
 					conn.close()
 					# TODO: Try to take over
@@ -134,25 +139,35 @@ class client:
 				if msg.startswith(redundancy.synchronize_prefix):
 					try:
 						msg = msg[len(redundancy.synchronize_prefix):]
-						synch, commands = msg.split(redundancy.command_prefix)
+						synch = None
+						commands = None
+						if msg.find(redundancy.command_prefix) != -1:
+							synch, commands = msg.split(redundancy.command_prefix)
+						else:
+							synch = msg
 						self.server_synch = pickle.loads(synch)
-						print "Server synch:", self.server_synch
+						#print "Server synch:", self.server_synch
 
-						for command in commands.split(redundancy.command_split):
-							pass # Call tricode recv(command)
+						if commands != None:
+							for command in commands.split(redundancy.command_split):
+								pass # Call tricode recv(command)
 
-						if len(self.send_queue):
-							pass # Send with padded events
+						if  not len(self.send_queue):
+							#print "Sending:", redundancy.ack_prefix
+							conn.send(redundancy.ack_prefix)
 						else:
 							msg = redundancy.ack_prefix
 							for event in self.send_queue:
 								msg += event + redundancy.event_split
 							msg = msg[:-redundancy.event_split]
+							print "Sending:", msg
 							conn.send(msg)
 							self.send_queue = []
+						print "Synchronized"
 					except:
 						# Something failed, try to take over?
-						print "Fail1:", sys.exc_info()[0], traceback.print_tb(sys.exc_info()[2])
+						print "Fail inner:", sys.exc_info()[1]
+						print traceback.print_tb(sys.exc_info()[2])
 						continue
 
 
