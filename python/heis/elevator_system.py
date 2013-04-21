@@ -1,5 +1,6 @@
 class System:
     def __init__(self, send):
+
         self.elevators = []
         self.inactive_elevators = []
         self.send_to = send
@@ -17,20 +18,26 @@ class System:
         msg = msg.rsplit(',')
 
         if msg[0] == 'in':
-            self.send_to()
+            floor = msg[1]
 
             if src in self.active_orders:
-                self.send_to('update,%s' % msg[1])
+                self.send_to('update,%s' % floor)
             else:
-                self.send_to('goto,%s' % msg[1], src)
+                self.send_to('goto,%s' % floor, src)
 
         elif msg[0] == 'out':
-            # pick an elevat0r
-            working_elevator = self.get_closest_elevator(msg[1])
+            floor = msg[1]
+            direction = 1 if msg[2] == 'up' else 0
 
-            self.send_to('light,%s' % msg[1], working_elevator)
+            if direction == 'up':
+                pass
+            elif direction == 'down':
+                pass
 
-            self.send_to('goto,%s' % msg[1], working_elevator)
+            working_elevator = self.get_elevator(floor, direction)
+
+            self.send_to('light,%s' % floor, working_elevator)
+            self.send_to('goto,%s' % floor, working_elevator)
 
         elif msg[0] == 'update':
             pass
@@ -44,8 +51,21 @@ class System:
             # self.send_to("light,floor", src)
             # self.send_to("goto,floor", src)
 
-    def get_closest_elevator(self, floor):
-        pass
+    def get_elevator(self, floor, direction):
+        current_elevator = None
+        for elevator in self.elevators:
+            if current_elevator is None:
+                current_elevator = elevator
+                continue
+
+            #if abs(elevator.lastFloor - floor) < abs(current_elevator.lastFloor - floor):
+            #    if elevator.direction == current_elevator.direction == direction:
+            #        current_elevator = elevator
+
+
+
+
+
 
     def client_disconnected(self, src):
         if src in self.elevators:

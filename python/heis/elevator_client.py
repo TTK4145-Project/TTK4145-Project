@@ -5,6 +5,7 @@ from IO import io
 
 class Client:
     def __init__(self, send):
+        self.send_event = send
 
         self.elevator = elevatorwrapper.ElevatorWrapper()
 
@@ -21,10 +22,8 @@ class Client:
         # only on moveToFloor
         self.current_action = "goto,2"
 
-        self.send_to = send
-
-    # msg = type,floor
     def recv(self, msg):
+        # msg[0]: type - msg[1]: floor
         msg = msg.rsplit(',')
 
         if msg[0] == 'light':
@@ -32,9 +31,9 @@ class Client:
             io.setBit(OUTPUT.FLOOR_LIGHTS[0], (msg[1] - 1) / 2)
 
         elif msg[0] == 'goto':
-            # up: 0 - down: 1
+            # up: 1 - down: 0
             self.current_action = 'goto,%s' % msg[1]
-            self.heading = 0 if msg[1] > self.current_floor else 1
+            self.heading = 1 if msg[1] > self.current_floor else 0
             self.elevator.moveToFloor(msg[1])
 
         elif msg[0] == 'update':
@@ -43,15 +42,14 @@ class Client:
 
     def button_listener(self, where, what, floor, en, to):
         if where == "in":
-            self.send_to('in,%s' % floor)
-
+            self.send_event('in,%s' % floor)
         elif where == "out":
             if what == "up":
-                self.send_to('out,%s,up' % floor)
+                self.send_event('out,%s,up' % floor)
             elif what == "down":
-                self.send_to('out,%s,down' % floor)
+                self.send_event('out,%s,down' % floor)
 
     def floor_listener(self, floor):
         self.current_floor = floor
         # print "Current floor", self.current_floor
-        self.send_to("update,%s,%s" % (floor, self.heading))
+        self.send_event("update,%s,%s" % (self.heading, floor))
