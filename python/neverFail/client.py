@@ -56,7 +56,7 @@ class client:
 
 
 		# Listen for answer for 3 * timeout seconds
-		for i in range(3):
+		for i in range(5):
 			# Broadcast message
 			self.udp.sendto(self.broadcast_message, ('255.255.255.255', self.UDPport)) # Broadcast to see if there are other elevators
 
@@ -83,6 +83,8 @@ class client:
 		if msg != self.broadcast_answer: return 1 # Wrong message received, they are not elevators
 		self.server[0] = addr[0]
 		self.server[1] = conn
+
+		conn.settimeout(redundancy.timeout)
 
 		self.my_address = conn.getsockname()[0]
 		print "My address:", self.my_address

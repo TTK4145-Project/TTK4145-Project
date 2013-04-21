@@ -31,7 +31,9 @@ def main():
 				print "Server died, my turn to take over"
 				synch = heis.server_synch
 				ip = heis.my_address
+				heis.delete()
 				heis = server(synch[0].keys(), synch[0], ip)
+				print "Takin ova"
 				heis.start()
 				break
 

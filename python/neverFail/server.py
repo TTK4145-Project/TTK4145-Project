@@ -67,6 +67,8 @@ class server:
 			msg, address = result[0][0].recvfrom(self.bufSize)
 			print msg, " from ", address
 
+			if address[0] == self.my_ip: continue
+
 			if msg != self.broadcast_message:
 				print "Wrong message received, not an elevator"
 				continue
