@@ -51,12 +51,13 @@ class client:
 		except:
 			return 2 # Probably already running
 
-		# Broadcast message
-		self.udp.sendto(self.broadcast_message, ('255.255.255.255', self.UDPport)) # Broadcast to see if there are other elevators
 
 		# Listen for answer for 3 * timeout seconds
-		for i in range(1):
-			read, write, error = select.select([self.tcp], [], [], self.timeout)
+		for i in range(3):
+			# Broadcast message
+			self.udp.sendto(self.broadcast_message, ('255.255.255.255', self.UDPport)) # Broadcast to see if there are other elevators
+
+			read, write, error = select.select([self.tcp], [], [], self.timeout/3)
 			if len(read) > 0: break
 
 		if len(read) == 0: return 1 # Noone answered
