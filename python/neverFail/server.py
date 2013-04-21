@@ -17,27 +17,22 @@ class server:
 	udp = None
 
 	client_list = dict()
+	client_synch = dict()
 
-	listen_thread_tcp = None
 	listen_thread_udp = None
-	sending_thread = None
+	ticker_thread = None
 	running = True
 
-	receive_lock = mutex()
-	send_lock = mutex()
-	send_queue = deque()
+	send_queue = dict()
 
-	receive_buffer = []
-
-	#ack_list
-	#event_list
+	my_ip = None
 
 	def delete(self):
 		self.running = False
-		if self.listen_thread_tcp != None:
+		if self.listen_thread_udp != None:
 			print "Joining"
-			self.listen_thread_tcp.join(self.timeout*2)
-			if self.listen_thread_tcp.isAlive(): print "Failed to kill thread"
+			self.listen_thread_udp.join(self.timeout*2)
+			if self.listen_thread_udp.isAlive(): print "Failed to kill thread"
 			else: print "Successfully killed thread"
 		else:
 			if redundancy.DEBUG: print "No thread"
@@ -51,6 +46,9 @@ class server:
 
 		self.listen_thread_udp = threading.Thread(target=self.server_udp_listener)
 		self.listen_thread_udp.start()
+
+		self.ticker_thread = threading.Thread(target=self.ticker)
+		self.ticker_thread.start()
 
 		while self.running: self.listen_thread_udp.join(0.5) # Temporary
 
@@ -72,119 +70,59 @@ class server:
 
 				print "Connected to", address[0]
 				tcp.send(self.broadcast_answer)
+				self.client_synch[tcp.getsockname()[0]] = False
+				if self.my_ip == None:
+					self.my_ip = tcp.getsockname()[0]
+					self.client_list[self.my_ip] = None
+					self.client_synch[client] = True
 				self.client_list[address[0]] = tcp
+				# Call tricode client connected
 			except:
 				print traceback.print_tb(sys.exc_info()[2])
 				print sys.exc_info()[0]
 				print "Failed to connect to", address[0]
 				continue
 
-			print "Broadcasting new client list"
-			self.lock()
-			fail = True
-			while fail:
-				fail = False
-				for addr in self.client_list.keys():
-					conn = self.client_list[addr]
-					try:
-						conn.send(redundancy.client_answer)
-					except:
-						del self.client_list[addr]
-						fail = True
-						print "Fail broadcast"
-						break
-
-				waiting, failed = [], []
-				for i in range(3):
-					read, write, error = select.select(self.client_list.values(), [], [], 0.1)
-					waiting.extend(read)
-					failed.extend(error)
-					if len(waiting) == len(self.client_list):
-						break
-
-				if len(waiting) == len(self.client_list):
-					for conn in waiting:
-						addr = conn.getpeername()[0]
-						try:
-							msg = conn.recv(redundancy.bufSize)
-							if not msg.startswith(redundancy.ack_prefix): raise 1 # Just fail
-							if not msg[len(redundancy.ack_prefix):].startswith(redundancy.client_answer): raise 1
-
-						except:
-							del self.client_list[addr]
-							fail = True
-							print "Fail broadcast 2"
-
-			self.unlock()
-
-
-	def send_message(self, target, prefix, message):
-		pass
-
-	def send_queue_processor(self):
+	def ticker(self):
 		while self.running:
-			if not len(self.send_queue):
-				sleep(0.1)
-				continue
+			if not len(self.client_list.values()): continue
+			# Synchronize
 
-			self.lock()
+			for client in self.client_list:
+				if client == self.my_ip: # No synchronization required
+					for command in self.send_queue[client]:
+						pass # Call tricode recv(msg, client)
+					continue
 
-			package = self.send_queue.popleft()
+				conn = self.client_list[client]
 
-			sender = package[0]
-			conn = self.client_list[sender]
-			prefix = package[1]
-			msg = package[2]
+				if conn == None: continue
 
-			try:
-				conn.send(prefix + pickle.dumps(msg))
+				try:
+					# If commands, pad with those in send
+					if not len(send_queue[client]): conn.send(redundancy.synchronize_prefix + "serialized system here")
+					else: 
+						msg = redundancy.synchronize_prefix + pickle.dumps(((self.client_list, self.client_synch),"serialized system here")) + redundancy.command_prefix
+						for command in self.send_queue[client]:
+							msg += command + redundancy.command_split
+						msg = msg[:len(redundancy.command_split)]
+						conn.send(msg)
+						self.send_queue[client] = []
+					msg = conn.recv(redundancy.bufSize)
+					if not msg.startswith(redundancy.ack_prefix): raise 1
+					msg = msg[len(redundancy.ack_prefix):]
+					for event in msg.split(redundancy):
+						pass # Call tricode recv(msg, client)
+					self.client_synch[client] = True
+				except:
+					self.client_list[client] = None
+					self.client_synch[client] = False
+					print "Client dropped: ", client, "Cause:", sys.exc_info()[0]
+					# Call tricode client dropped
 
-				while self.running:
-					read, write, error = select.select([conn], [], [], redundancy.timeout / 4.0)
+	def send(self, message):
+		pass # Call tricode recv(msg)
 
-					if len(read):
-						msg = conn.recv(redundancy.bufSize)
-						if msg.startswith(redundancy.ack_prefix):
-							if msg[len(redundancy.ack_prefix):].startswith(prefix):
-								# All ok
-								if len(msg) > len(redundancy.ack_prefix + prefix):
-									# Multiple packets received
-									print "Multiple packets received, splitting"
-									receive_buffer.append((sender, msg[len(redundancy.ack_prefix + prefix)]))
-								break
-							else: raise 1
-						else:
-							receive_buffer.append((sender, msg))
-					else:
-						raise 1 # lost connection
-			except:
-				conn.close()
-				del self.client_list[package[0]]
-
-			self.release()
-
-	def event_received(self, event):
-		pass
-
-	def message_listener(self):
-		pass
-
-	def event_listener(self, event):
-		pass
-
-	def lock(self):
-		send_mutex_counter = 0
-		recv_mutex_counter = 0
-		while not self.send_lock.testandset():
-			sleep(0.05) # mutex lock
-			send_mutex_counter += 1
-		while not self.receive_lock.testandset():
-			sleep(0.05) # mutex lock
-			recv_mutex_counter += 1
-		print "Waited %f seconds for send lock" % (send_mutex_counter * 0.05)
-		print "Waited %f seconds for recv lock" % (recv_mutex_counter * 0.05)
-
-	def unlock(self):
-		self.receive_lock.unlock() # mutex release
-		self.send_lock.unlock() # mutex release
+	def send_to(self, message, to):
+		self.send_queue[to].append(message)
 

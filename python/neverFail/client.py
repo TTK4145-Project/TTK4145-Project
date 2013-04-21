@@ -21,6 +21,8 @@ class client:
 	listen_thread = None
 	running = True
 
+	server_synch = None
+
 	def delete(self):
 		self.running = False
 		if self.listen_thread != None:
@@ -51,7 +53,7 @@ class client:
 		self.udp.sendto(self.broadcast_message, ('255.255.255.255', self.UDPport)) # Broadcast to see if there are other elevators
 
 		# Listen for answer for 3 * timeout seconds
-		for i in range(3):
+		for i in range(1):
 			read, write, error = select.select([self.tcp], [], [], self.timeout)
 			if len(read) > 0: break
 
@@ -110,45 +112,38 @@ class client:
 			sleep(0.1)
 			read, write, error = select.select([self.server[1]], [], [], self.timeout)
 
-			if len(read) + len(write) + len(error) != 0: print "Event: ", len(read), len(write), len(error)
+			if len(read): print "Event: ", len(read)
 
-			for conn in error:
-				try:
-					index = conn.getpeername()[0]
-					# TODO: Try to take over
-					#del client_list[index]
-				except: print "Error fail"
-
-			for conn in read:
-				try:
-					index = conn.getpeername()[0]
-					msg = conn.recv(self.bufSize)
-					if len(msg): print "Received command \"", msg, "\""
-					else:
-						conn.close()
-						# TODO: Try to take over
-						#del self.client_list[index]
-						continue
-
-					# call tricode
-					if msg.startswith(redundancy.client_answer):
-						try:
-							msg = msg[len(redundancy.client_answer):]
-							clients = pickle.loads(msg)
-							for client in clients:
-								if not client in self.client_list:
-									#self.client_list[client] = None
-									pass
-							conn.send(redundancy.ack_prefix + redundancy.client_answer)
-							if redundancy.DEBUG: print "Client list:\n", clients
-						except: # Failed to interpret client list
-							pass
-
-				except:
-					print "Read fail"
+			conn = read[0]
+			try:
+				index = conn.getpeername()[0]
+				msg = conn.recv(self.bufSize)
+				if len(msg): print "Received command \"", msg, "\""
+				else:
 					conn.close()
 					# TODO: Try to take over
 					#del self.client_list[index]
+					continue
+
+				# call tricode
+				if msg.startswith(redundancy.synchronize_prefix):
+					try:
+						msg = msg[len(redundancy.synchronize_prefix):]
+						synch, commands = msg.split(redundancy.command_prefix)
+						self.server_synch = pickle.loads(synch)
+						print "Server synch:", self.server_synch
+
+						for command in commands.split(redundancy.command_split):
+							pass # Call tricode recv(command)
+					except:
+						# Something failed, try to take over?
+						pass
+
+			except:
+				print "Read fail"
+				conn.close()
+				# TODO: Try to take over
+				#del self.client_list[index]
 
 	def event_listener(self, event):
 		pass

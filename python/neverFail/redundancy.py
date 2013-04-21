@@ -3,7 +3,7 @@ class redundancy:
 	UDPport = 54545
 	TCPport = 54544
 	bufSize = 4096
-	timeout = 1.0
+	timeout = 3.0
 
 	broadcast_message = "I am elevator"
 	broadcast_answer  = "We are elevators"
@@ -14,6 +14,9 @@ class redundancy:
 	}
 
 	ack_prefix = "Done :)"
+	synchronize_prefix = "Become this:"
+	command_prefix = "Execute my commands!"
+	command_split = "<- this and this ->"
 
 	package_start = "^&%pkg_start%&^"
 	package_end = "^&%pkg_end%&^"
