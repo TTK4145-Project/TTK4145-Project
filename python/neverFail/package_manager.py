@@ -48,5 +48,5 @@ class package_manager:
 		if prefix == None: return 1 # Fatal error
 
 		pkg = package.package(ack, prefix, pack)
-		self.buffer_list.append(pkg)
+		self.buffer_list.push_right(pkg)
 		return 0

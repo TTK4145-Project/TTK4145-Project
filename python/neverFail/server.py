@@ -49,65 +49,10 @@ class server:
 		self.udp.bind(('', self.UDPport))
 		self.udp.setblocking(0)
 
-		address = None
-
-		self.listen_thread_tcp = threading.Thread(target=self.server_tcp_listener)
-		self.listen_thread_tcp.start()
-
 		self.listen_thread_udp = threading.Thread(target=self.server_udp_listener)
 		self.listen_thread_udp.start()
 
 		while self.running: self.listen_thread_udp.join(0.5) # Temporary
-
-	def server_tcp_listener(self):
-		while self.running:
-			read, write, error = select.select(self.client_list.values(), [], [], self.timeout)
-
-			if len(read) + len(write) + len(error) != 0: print "Event: ", len(read), len(write), len(error)
-			else: 
-				sleep(0.1)
-				continue
-
-			if not self.receive_lock.testandset():
-				sleep(0.05)
-				continue
-
-			for conn in error:
-				try:
-					index = conn.getpeername()[0]
-					del client_list[index]
-				except: print "Error fail"
-
-			for conn in read:
-				try:
-					index = conn.getpeername()[0]
-					msg = conn.recv(self.bufSize)
-					if len(msg): print "Received command \"", msg, "\""
-					else:
-						conn.close()
-						del self.client_list[index]
-						continue
-
-					# call tricode
-					if msg == redundancy.client_request:
-						print "Sending client list"
-						conn.send(redundancy.client_answer + pickle.dumps(self.client_list.keys()))
-
-				except:
-					print "Read fail"
-					conn.close()
-					del self.client_list[index]
-
-			for buffered in self.receive_buffer:
-				conn = self.client_list[buffered[0]]
-				msg = buffered[1]
-
-				# call tricode
-				if msg == redundancy.client_request:
-					conn.send(redundancy.client_answer + pickle.dumps(self.client_list.keys()))
-
-
-			self.receive_lock.unlock()
 
 	def server_udp_listener(self):
 		while self.running:
