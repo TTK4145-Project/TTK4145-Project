@@ -16,6 +16,7 @@ class server:
 
 	udp = None
 
+	client_mutex = mutex()
 	client_list = dict()
 	client_synch = dict()
 
@@ -65,6 +66,7 @@ class server:
 
 			tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			tcp.settimeout(redundancy.timeout)
+			while not self.client_mutex.testandset(): sleep(0.1)
 			try:
 				tcp.connect((address[0], self.TCPport))
 
@@ -78,8 +80,10 @@ class server:
 					self.send_queue[self.my_ip] = []
 				self.send_queue[address[0]] = []
 				self.client_list[address[0]] = tcp
+				self.client_mutex.unlock()
 				# Call tricode client connected
 			except:
+				self.client_mutex.unlock()
 				print traceback.print_tb(sys.exc_info()[2])
 				print sys.exc_info()[0]
 				print "Failed to connect to", address[0]
@@ -91,6 +95,7 @@ class server:
 			if not len(self.client_list.values()): continue
 			# Synchronize
 
+			while not self.client_mutex.testandset(): sleep(0.1)
 			for client in self.client_list:
 				if client == self.my_ip: # No synchronization required
 					for command in self.send_queue[client]:
@@ -125,6 +130,7 @@ class server:
 					self.client_synch[client] = False
 					print "Client dropped: ", client, "Cause:", sys.exc_info()[0], traceback.print_tb(sys.exc_info()[2])
 					# Call tricode client dropped
+			self.client_mutex.unlock()
 
 	def send(self, message):
 		pass # Call tricode recv(msg)
