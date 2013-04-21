@@ -103,7 +103,7 @@ class server:
 
 				try:
 					# If commands, pad with those in send
-					if not len(self.send_queue[client]): conn.send(redundancy.synchronize_prefix + "serialized system here")
+					if not len(self.send_queue[client]): conn.send(redundancy.synchronize_prefix + pickle.dumps(((self.client_list, self.client_synch),"serialized system here")))
 					else: 
 						msg = redundancy.synchronize_prefix + pickle.dumps(((self.client_list, self.client_synch),"serialized system here")) + redundancy.command_prefix
 						for command in self.send_queue[client]:
