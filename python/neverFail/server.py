@@ -70,11 +70,13 @@ class server:
 
 				print "Connected to", address[0]
 				tcp.send(self.broadcast_answer)
-				self.client_synch[tcp.getsockname()[0]] = False
+				self.client_synch[address[0]] = False
 				if self.my_ip == None:
 					self.my_ip = tcp.getsockname()[0]
 					self.client_list[self.my_ip] = None
-					self.client_synch[client] = True
+					self.client_synch[self.my_ip] = True
+					self.send_queue[self.my_ip] = []
+				self.send_queue[address[0]] = []
 				self.client_list[address[0]] = tcp
 				# Call tricode client connected
 			except:
@@ -85,6 +87,7 @@ class server:
 
 	def ticker(self):
 		while self.running:
+			sleep(0.5)
 			if not len(self.client_list.values()): continue
 			# Synchronize
 

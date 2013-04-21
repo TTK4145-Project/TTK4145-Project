@@ -113,6 +113,7 @@ class client:
 			read, write, error = select.select([self.server[1]], [], [], self.timeout)
 
 			if len(read): print "Event: ", len(read)
+			else: continue
 
 			conn = read[0]
 			try:
