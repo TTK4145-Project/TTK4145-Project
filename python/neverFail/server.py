@@ -112,7 +112,9 @@ class server:
 						conn.send(msg)
 						self.send_queue[client] = []
 					msg = conn.recv(redundancy.bufSize)
-					if not msg.startswith(redundancy.ack_prefix): raise 1
+					if not msg.startswith(redundancy.ack_prefix):
+						print "Received:", msg
+						raise Exception("Not ack")
 					if len(msg) > len(redundancy.ack_prefix):
 						msg = msg[len(redundancy.ack_prefix):]
 						for event in msg.split(redundancy.event_split):

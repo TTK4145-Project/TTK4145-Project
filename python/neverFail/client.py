@@ -113,13 +113,14 @@ class client:
 	def message_listener(self):
 		while self.running:
 			sleep(0.1)
-			read, write, error = select.select([self.server[1]], [], [], self.timeout)
-
-			if len(read): print "Event: ", len(read)
-			else: continue
-
-			conn = read[0]
 			try:
+				read, write, error = select.select([self.server[1]], [], [], self.timeout)
+
+				if len(read): print "Event: ", len(read)
+				else: continue
+
+				conn = read[0]
+
 				index = conn.getpeername()[0]
 				msg = conn.recv(self.bufSize)
 				if len(msg): print "Received command \"", msg, "\""
@@ -151,11 +152,13 @@ class client:
 							self.send_queue = []
 					except:
 						# Something failed, try to take over?
+						print "Fail1:", sys.exc_info()[0], traceback.print_tb(sys.exc_info()[2])
 						continue
 
 
 			except:
 				print "Read fail"
+				sleep(1.0)
 				conn.close()
 				# TODO: Try to take over
 				#del self.client_list[index]
