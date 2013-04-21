@@ -23,6 +23,8 @@ class client:
 
 	server_synch = None
 
+	send_queue = []
+
 	def delete(self):
 		self.running = False
 		if self.listen_thread != None:
@@ -136,9 +138,20 @@ class client:
 
 						for command in commands.split(redundancy.command_split):
 							pass # Call tricode recv(command)
+
+						if len(self.send_queue):
+							pass # Send with padded events
+						else:
+							msg = redundancy.ack_prefix
+							for event in self.send_queue:
+								msg += event + redundancy.event_split
+							msg = msg[:-redundancy.event_split]
+							conn.send(msg)
+							self.send_queue = []
 					except:
 						# Something failed, try to take over?
-						pass
+						continue
+
 
 			except:
 				print "Read fail"

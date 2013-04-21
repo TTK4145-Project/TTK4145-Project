@@ -103,24 +103,25 @@ class server:
 
 				try:
 					# If commands, pad with those in send
-					if not len(send_queue[client]): conn.send(redundancy.synchronize_prefix + "serialized system here")
+					if not len(self.send_queue[client]): conn.send(redundancy.synchronize_prefix + "serialized system here")
 					else: 
 						msg = redundancy.synchronize_prefix + pickle.dumps(((self.client_list, self.client_synch),"serialized system here")) + redundancy.command_prefix
 						for command in self.send_queue[client]:
 							msg += command + redundancy.command_split
-						msg = msg[:len(redundancy.command_split)]
+						msg = msg[:-len(redundancy.command_split)]
 						conn.send(msg)
 						self.send_queue[client] = []
 					msg = conn.recv(redundancy.bufSize)
 					if not msg.startswith(redundancy.ack_prefix): raise 1
-					msg = msg[len(redundancy.ack_prefix):]
-					for event in msg.split(redundancy):
-						pass # Call tricode recv(msg, client)
+					if len(msg) > len(redundancy.ack_prefix):
+						msg = msg[len(redundancy.ack_prefix):]
+						for event in msg.split(redundancy.event_split):
+							pass # Call tricode recv(msg, client)
 					self.client_synch[client] = True
 				except:
 					self.client_list[client] = None
 					self.client_synch[client] = False
-					print "Client dropped: ", client, "Cause:", sys.exc_info()[0]
+					print "Client dropped: ", client, "Cause:", sys.exc_info()[0], traceback.print_tb(sys.exc_info()[2])
 					# Call tricode client dropped
 
 	def send(self, message):

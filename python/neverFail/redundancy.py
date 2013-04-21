@@ -17,6 +17,7 @@ class redundancy:
 	synchronize_prefix = "Become this:"
 	command_prefix = "Execute my commands!"
 	command_split = "<- this and this ->"
+	event_split = command_split
 
 	package_start = "^&%pkg_start%&^"
 	package_end = "^&%pkg_end%&^"
