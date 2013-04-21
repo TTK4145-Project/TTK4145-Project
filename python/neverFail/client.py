@@ -55,7 +55,7 @@ class client:
 			return 2 # Probably already running
 
 
-		# Listen for answer for 3 * timeout seconds
+		# Listen for answer for 5 * timeout seconds
 		for i in range(5):
 			# Broadcast message
 			self.udp.sendto(self.broadcast_message, ('255.255.255.255', self.UDPport)) # Broadcast to see if there are other elevators
