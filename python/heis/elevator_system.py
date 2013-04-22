@@ -85,7 +85,7 @@ class System:
             # print self.elevators[elevator]['current_floor']
 
             ## do more magic here
-            if self.elevators[elevator]['current_floor'] == None:
+            if self.elevators[elevator]['current_floor'] == None or self.elevators[current_elevator]['current_floor']:
                 current_elevator = elevator
             else:
                 if abs(int(self.elevators[elevator]['current_floor']) - int(floor)) < abs(int(self.elevators[current_elevator]['current_floor']) - int(floor)):
