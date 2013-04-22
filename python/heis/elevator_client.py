@@ -54,7 +54,7 @@ class Client:
 
     def floor_listener(self, floor):
 
-        print "Current floor", self.current_floor
+        print "Current floor:", self.current_floor
         if self.current_floor != floor:
             self.current_floor = floor
             self.send_event("update,%s,%s" % (self.direction, floor))
@@ -62,6 +62,7 @@ class Client:
         # check if current floor is destination and poke system
 
         if floor == self.current_action.rsplit(',')[1]:
+            print 'I has done work %s' % self.current_action
             self.elevator.stop()
             self.send_event('done,%s' % self.current_action)
         # if destination sel.send_event('done,%s' % self.queue.pop(0))

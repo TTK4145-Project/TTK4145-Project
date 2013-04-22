@@ -47,6 +47,7 @@ class System:
             self.send_to('goto,%s' % floor, working_elevator)
 
         elif msg[0] == 'update':
+            print 'I get UPDATE'
             self.elevators[src]['direction'] = msg[1]
             self.elevators[src]['current_floor'] = msg[2]
 
