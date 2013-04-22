@@ -50,6 +50,7 @@ def main():
 		print "FAIL"
 		print traceback.print_tb(sys.exc_info()[2])
 	heis.delete()
+	heis.delete_driver()
 	exit()
 
 main()

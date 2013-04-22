@@ -61,6 +61,8 @@ class server:
 			else: print "Successfully killed thread"
 		else:
 			if redundancy.DEBUG: print "No thread"
+
+	def delete_driver(self):
 		if self.elevator_hardware:
 			self.elevator_hardware.delete()
 
