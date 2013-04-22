@@ -79,8 +79,8 @@ class System:
             if elevator['current_floor'] is None:
                 current_elevator = elevator
             else:
-                if abs(elevator['current_floor'] - floor) < abs(current_elevator['current_floor'] - floor):
-                    if elevator['direction'] == current_elevator['direction'] == direction:
+                if abs(self.elevators[elevator]['current_floor'] - floor) < abs(self.elevators[current_elevator]['current_floor'] - floor):
+                    if self.elevators[elevator]['direction'] == self.elevators[current_elevator]['direction'] == direction:
                         current_elevator = elevator
 
         return current_elevator
