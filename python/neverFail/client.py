@@ -178,7 +178,7 @@ class client:
 							msg = redundancy.ack_prefix
 							for event in self.send_queue:
 								msg += event + redundancy.event_split
-							msg = msg[:-redundancy.event_split]
+							msg = msg[:-len(redundancy.event_split)]
 							print "Sending:", msg
 							conn.send(msg)
 							self.send_queue = []
