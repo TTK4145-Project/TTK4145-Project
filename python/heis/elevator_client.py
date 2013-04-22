@@ -17,7 +17,7 @@ class Client:
 
         self.queue = []
         self.current_floor = None
-        self.heading = -1
+        self.direction = -1
 
         # only on moveToFloor
         self.current_action = "goto,2"
@@ -33,7 +33,7 @@ class Client:
         elif msg[0] == 'goto':
             # up: 1 - down: 0
             self.current_action = 'goto,%s' % msg[1]
-            self.heading = 1 if msg[1] > self.current_floor else 0
+            self.direction = 1 if msg[1] > self.current_floor else 0
             self.elevator.moveToFloor(msg[1])
 
         elif msg[0] == 'update':
@@ -52,4 +52,7 @@ class Client:
     def floor_listener(self, floor):
         self.current_floor = floor
         # print "Current floor", self.current_floor
-        self.send_event("update,%s,%s" % (self.heading, floor))
+        self.send_event("update,%s,%s" % (self.direction, floor))
+
+        # check if current floor is destination and poke system
+        # if destination sel.send_event('done,%s' % self.queue.pop(0))
