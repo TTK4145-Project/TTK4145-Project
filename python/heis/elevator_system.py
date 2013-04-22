@@ -61,7 +61,7 @@ class System:
             print "FRIST:",src
             if src in self.elevators and msg[1]+','+msg[2] in self.elevators[src]['work']:
                 for i, w in enumerate(self.elevators[src]['work']):
-                    if w == msg[1]:
+                    if w == msg[1]+','+msg[2]:
                         print "BEFORE DONE"
                         print self.elevators[src]['work']
                         del self.elevators[src]['work'][i]
