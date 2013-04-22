@@ -70,14 +70,16 @@ class System:
 
     def get_elevator(self, floor, direction):
         current_elevator = None
+
         for elevator in self.elevators:
+
             if current_elevator is None:
                 current_elevator = elevator
                 continue
 
             print self.elevators
-            print self.elevators[elevator]['current_floor']
-            
+            # print self.elevators[elevator]['current_floor']
+
             ## do more magic here
             if self.elevators[elevator]['current_floor'] == None:
                 current_elevator = elevator
