@@ -24,7 +24,7 @@ class System:
         if msg[0] == 'in':
             floor = msg[1]
 
-            self.elevators[src]['work'].append('goto,%i' % floor)
+            self.elevators[src]['work'].append('goto,%s' % floor)
 
             #if src in self.active_orders:
                 #self.send_to('update,%s' % floor, src)
