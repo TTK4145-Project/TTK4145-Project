@@ -31,7 +31,7 @@ class Client:
 
         if msg[0] == 'light':
             # turn on current floor light
-            io.setBit(OUTPUT.FLOOR_LIGHTS[0], (int(msg[1]) - 1) / 2)
+            io.setBit(OUTPUT.FLOOR_LIGHTS[0], (int(msg[1])) / 2)
 
         elif msg[0] == 'goto':
             # up: 1 - down: 0
@@ -58,7 +58,7 @@ class Client:
         if self.current_floor != floor:
             self.current_floor = floor
             self.send_event("update,%s,%s" % (self.direction, floor))
-
+        print "New current floor:", self.current_floor
         # check if current floor is destination and poke system
 
         if floor == self.current_action.rsplit(',')[1]:
