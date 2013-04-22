@@ -115,6 +115,7 @@ class server:
 					self.client_list[self.my_ip] = None
 					self.client_synch[self.my_ip] = True
 					self.send_queue[self.my_ip] = []
+					self.elevators.client_reconnected(self.my_ip)
 				self.send_queue[address[0]] = []
 				self.client_list[address[0]] = tcp
 				self.elevators.client_reconnected(address[0]) # Call tricode client connected
