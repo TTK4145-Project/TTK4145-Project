@@ -30,7 +30,7 @@ class ElevatorWrapper:
             print "Obstruction"
             return
         if floor > self.topFloor:
-            print "Too much floor (%s) > (%s)" % (floor, self.topFloor)
+            print "Too much floor: %i > %i , WAT" % (floor, self.topFloor)
             return
         print "Moving to floor", floor
         if floor > self.lastFloor:

@@ -35,9 +35,9 @@ class Client:
 
         elif msg[0] == 'goto':
             # up: 1 - down: 0
-            self.current_action = 'goto,%s' % msg[1]
+            self.current_action = 'goto,%s' % int(msg[1])
             self.direction = 1 if msg[1] > self.current_floor else 0
-            self.elevator.moveToFloor(msg[1])
+            self.elevator.moveToFloor(int(msg[1]))
 
         elif msg[0] == 'update':
             self.queue.append(self.current_action)
