@@ -60,14 +60,13 @@ class System:
         elif msg[0] == 'done':
             print "FRIST:",src
             if src in self.elevators and msg[1]+','+msg[2] in self.elevators[src]['work']:
-                if msg[1] in self.elevators[src]['work']:
-                    for i, w in enumerate(self.elevators[src]['work']):
-                        if w == msg[1]:
-                            print "BEFORE DONE"
-                            print self.elevators[src]['work']
-                            del self.elevators[src]['work'][i]
-                            print "AFTER  DONE"
-                            print self.elevators[src]['work']
+                for i, w in enumerate(self.elevators[src]['work']):
+                    if w == msg[1]:
+                        print "BEFORE DONE"
+                        print self.elevators[src]['work']
+                        del self.elevators[src]['work'][i]
+                        print "AFTER  DONE"
+                        print self.elevators[src]['work']
 
 
         #self.send_to(current_event, working_elevator)
