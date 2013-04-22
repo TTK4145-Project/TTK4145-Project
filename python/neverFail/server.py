@@ -141,7 +141,7 @@ class server:
 						try:
 							for command in self.send_queue[client]:
 								print command
-								self.elevator_hardware.recv(msg)
+								self.elevators.recv(msg, client)
 								pass # Call tricode recv(msg)
 						except AttributeError:
 							print "NoneType again :("
