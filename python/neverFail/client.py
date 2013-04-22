@@ -194,7 +194,7 @@ class client:
 							print "Sending:", msg
 							conn.send(msg)
 							self.send_queue = []
-						print "Synchronized"
+						#print "Synchronized"
 						idletime = time.time()
 					except:
 						# Something failed, try to take over?
