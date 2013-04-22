@@ -31,7 +31,7 @@ class Client:
 
         if msg[0] == 'light':
             # turn on current floor light
-            io.setBit(OUTPUT.FLOOR_LIGHTS[0], (msg[1] - 1) / 2)
+            io.setBit(OUTPUT.FLOOR_LIGHTS[0], (int(msg[1]) - 1) / 2)
 
         elif msg[0] == 'goto':
             # up: 1 - down: 0
