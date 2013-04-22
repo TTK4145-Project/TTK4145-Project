@@ -136,14 +136,16 @@ class server:
 			while not self.client_mutex.testandset(): sleep(0.1)
 			for client in self.client_list:
 				if client == self.my_ip: # No synchronization required
-					if len(self.send_queue[client]): print "Sending commands to myself:"
-					try:
-						for command in self.send_queue[client]:
-							print command
-							self.elevator_hardware.recv(msg)
-							pass # Call tricode recv(msg)
-					except AttributeError:
-						print "NoneType again :("
+					if len(self.send_queue[client]):
+						print "Sending commands to myself:"
+						try:
+							for command in self.send_queue[client]:
+								print command
+								self.elevator_hardware.recv(msg)
+								pass # Call tricode recv(msg)
+						except AttributeError:
+							print "NoneType again :("
+						self.send_queue[client] = []
 					continue
 
 				conn = self.client_list[client]
