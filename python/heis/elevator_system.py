@@ -74,9 +74,9 @@ class System:
                 continue
 
             ## do more magic here
-            #if abs(elevator.lastFloor - floor) < abs(current_elevator.lastFloor - floor):
-            #    if elevator.direction == current_elevator.direction == direction:
-            #        current_elevator = elevator
+            if abs(elevator['current_floor'] - floor) < abs(current_elevator['current_floor'] - floor):
+                if elevator['direction'] == current_elevator['direction'] == direction:
+                    current_elevator = elevator
 
         return current_elevator
 
@@ -95,5 +95,5 @@ class System:
         if src in self.inactive_elevators:
             self.elevators[src] = self.inactive_elevators[src]
             del self.inactive_elevators[src]
-        else:
+        elif src not in self.elevators:
             self.elevators = {'current_floor': None, 'direction': None, 'work': []}
