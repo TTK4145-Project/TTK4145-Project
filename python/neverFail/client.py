@@ -2,6 +2,7 @@ import socket, threading, select, pickle, sys
 from time import sleep
 from redundancy import redundancy
 import elevator_client
+import time
 
 class client:
 	UDPport = redundancy.UDPport
