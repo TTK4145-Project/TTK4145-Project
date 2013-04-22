@@ -76,7 +76,7 @@ class System:
                 continue
 
             ## do more magic here
-            if elevator['current_floor'] is None:
+            if self.elevators[elevator]['current_floor'] is None:
                 current_elevator = elevator
             else:
                 if abs(self.elevators[elevator]['current_floor'] - floor) < abs(self.elevators[current_elevator]['current_floor'] - floor):
