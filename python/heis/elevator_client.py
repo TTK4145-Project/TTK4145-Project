@@ -66,3 +66,6 @@ class Client:
             self.elevator.stop()
             self.send_event('done,%s' % self.current_action)
         # if destination sel.send_event('done,%s' % self.queue.pop(0))
+
+    def set_send(self, send):
+        self.send_event = send
