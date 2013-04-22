@@ -42,7 +42,7 @@ class server:
 		self.my_ip = my_ip
 		if elevators == None:
 			print "Setting up new system"
-			self.elevator = elevator_system.System(self.send_to)
+			self.elevators = elevator_system.System(self.send_to)
 		else:
 			print "Restoring old system"
 			self.elevators = elevators
@@ -127,9 +127,12 @@ class server:
 			while not self.client_mutex.testandset(): sleep(0.1)
 			for client in self.client_list:
 				if client == self.my_ip: # No synchronization required
-					for command in self.send_queue[client]:
-						self.elevator_hardware.recv(msg)
-						pass # Call tricode recv(msg)
+					try:
+						for command in self.send_queue[client]:
+							self.elevator_hardware.recv(msg)
+							pass # Call tricode recv(msg)
+					except AttributeError:
+						print "NoneType again :("
 					continue
 
 				conn = self.client_list[client]

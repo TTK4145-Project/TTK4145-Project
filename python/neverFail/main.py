@@ -40,7 +40,10 @@ def main():
 
 		if result == 1:
 			print "I am now master"
-			heis = server()
+			ip = heis.my_address
+			hardware = heis.elevator_hardware
+			heis.delete()
+			heis = server(my_ip=ip, elevator_hardware=hardware)
 			heis.start()
 
 	except:
