@@ -88,7 +88,7 @@ class server:
 			msg, address = result[0][0].recvfrom(self.bufSize)
 			print msg, " from ", address
 
-			if self.client_list[address[0]] != None:
+			if address[0] in self.client_list != None:
 				print "Already connected to", address[0]
 				continue
 
