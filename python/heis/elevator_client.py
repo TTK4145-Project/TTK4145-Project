@@ -50,9 +50,11 @@ class Client:
                 self.send_event('out,%s,down' % floor)
 
     def floor_listener(self, floor):
-        self.current_floor = floor
+
         # print "Current floor", self.current_floor
-        self.send_event("update,%s,%s" % (self.direction, floor))
+        if self.current_floor != floor:
+            self.current_floor = floor
+            self.send_event("update,%s,%s" % (self.direction, floor))
 
         # check if current floor is destination and poke system
 

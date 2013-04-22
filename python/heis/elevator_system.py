@@ -1,3 +1,5 @@
+import pickle
+
 class System:
     def __init__(self, send):
 
@@ -74,9 +76,9 @@ class System:
                 continue
 
             ## do more magic here
-            #if abs(elevator.lastFloor - floor) < abs(current_elevator.lastFloor - floor):
-            #    if elevator.direction == current_elevator.direction == direction:
-            #        current_elevator = elevator
+            if abs(elevator['current_floor'] - floor) < abs(current_elevator['current_floor'] - floor):
+                if elevator['direction'] == current_elevator['direction'] == direction:
+                    current_elevator = elevator
 
         return current_elevator
 
@@ -95,5 +97,16 @@ class System:
         if src in self.inactive_elevators:
             self.elevators[src] = self.inactive_elevators[src]
             del self.inactive_elevators[src]
-        else:
+        elif src not in self.elevators:
             self.elevators = {'current_floor': None, 'direction': None, 'work': []}
+
+    def get_pickle(self):
+        anders = (self.elevators, self.inactive_elevators, self.active_orders)
+        return pickle.dumps(anders)
+
+    def put_pickle(self, info):
+        anders = pickle.loads(info)
+        self.elevators = anders[0]
+        self.inactive_elevators = anders[1]
+        self.active_orders = anders[2]
+        
