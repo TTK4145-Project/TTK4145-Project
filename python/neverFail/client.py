@@ -3,6 +3,7 @@ from time import sleep
 from redundancy import redundancy
 import elevator_client
 import time
+import traceback
 
 class client:
 	UDPport = redundancy.UDPport
