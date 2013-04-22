@@ -15,8 +15,8 @@ class System:
         # self.active_orders = {}
 
     def recv(self, msg, src):
-        if src not in self.elevators:
-            self.elevators[src]= {'current_floor': None, 'direction': None, 'work': []}
+        # if src not in self.elevators:
+            # self.elevators[src]= {'current_floor': None, 'direction': None, 'work': []}
 
         # message contains  whatbutton(in/out/stop/obstruction/floorupdate),whatfloor([1-9]*),others(up/down etc)
         msg = msg.rsplit(',')
@@ -70,14 +70,16 @@ class System:
 
     def get_elevator(self, floor, direction):
         current_elevator = None
+
         for elevator in self.elevators:
+
             if current_elevator is None:
                 current_elevator = elevator
                 continue
 
             print self.elevators
-            print self.elevators[elevator]['current_floor']
-            
+            # print self.elevators[elevator]['current_floor']
+
             ## do more magic here
             if self.elevators[elevator]['current_floor'] == None:
                 current_elevator = elevator
@@ -104,7 +106,7 @@ class System:
             self.elevators[src] = self.inactive_elevators[src]
             del self.inactive_elevators[src]
         elif src not in self.elevators:
-            self.elevators = {'current_floor': None, 'direction': None, 'work': []}
+            self.elevators[src] = {'current_floor': None, 'direction': None, 'work': []}
 
     def get_pickle(self):
         anders = (self.elevators, self.inactive_elevators, self.active_orders)
