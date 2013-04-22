@@ -58,7 +58,7 @@ class System:
             pass
 
         elif msg[0] == 'done':
-            if src in self.elevators | msg[1] in self.elevators[src]['work']:
+            if src in self.elevators or msg[1] in self.elevators[src]['work']:
                 if msg[1] in self.elevators[src]['work']:
                     for i, w in enumerate(self.elevators[src]['work']):
                         if w == msg[1]:
