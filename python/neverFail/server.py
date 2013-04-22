@@ -89,7 +89,7 @@ class server:
 			msg, address = result[0][0].recvfrom(self.bufSize)
 			print msg, " from ", address
 
-			if address[0] in self.client_list != None:
+			if address[0] in self.client_list != None and False:
 				print "Already connected to", address[0]
 				continue
 
@@ -168,6 +168,7 @@ class server:
 						raise Exception("Not ack")
 					if len(msg) > len(redundancy.ack_prefix):
 						msg = msg[len(redundancy.ack_prefix):]
+						print "Splitting up and receiving:", msg
 						for event in msg.split(redundancy.event_split):
 							self.elevators.recv(event, client)
 							pass # Call tricode recv(msg, client)
