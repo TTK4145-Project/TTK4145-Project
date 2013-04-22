@@ -57,5 +57,5 @@ class Client:
         # check if current floor is destination and poke system
 
         if floor == self.current_action.rsplit(',')[1]:
-            self.send_event('done,%s' % self.queue.pop(0))
+            self.send_event('done,%s' % self.current_action)
         # if destination sel.send_event('done,%s' % self.queue.pop(0))
