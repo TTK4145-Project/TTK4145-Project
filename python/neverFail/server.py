@@ -27,6 +27,7 @@ class server:
 	running = True
 
 	send_queue = dict()
+	self_recv_queue = []
 
 	my_ip = None
 
@@ -41,7 +42,7 @@ class server:
 		self.my_ip = my_ip
 		if elevators == None:
 			print "Setting up new system"
-			self.elevator = elevator_system.System()
+			self.elevator = elevator_system.System(self.send_to)
 		else:
 			print "Restoring old system"
 			self.elevators = elevators
@@ -161,10 +162,12 @@ class server:
 					print "Client dropped: ", client, "Cause:", sys.exc_info()[0], traceback.print_tb(sys.exc_info()[2])
 					self.elevators.client_disconnected(client)
 					# Call tricode client dropped
+			for message in self.self_recv_queue:
+				self.elevators.recv(message, self.my_ip)
 			self.client_mutex.unlock()
 
 	def send(self, message):
-		self.elevators.recv(message, self.my_ip)
+		self.self_recv_queue.append(message)
 		pass # Call tricode recv(msg)
 
 	def send_to(self, message, to):
