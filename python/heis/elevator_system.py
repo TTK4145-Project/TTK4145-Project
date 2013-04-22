@@ -56,9 +56,11 @@ class System:
             pass
 
         elif event[0] == 'done':
-            if event[1]+','+event[2] in self.elevators[src]['work']:
+            work = event[1]+','+event[2]
+
+            if work in self.elevators[src]['work']:
                 for i, w in enumerate(self.elevators[src]['work']):
-                    if w == event[1]+','+event[2]:
+                    if w == work:
                         print "BEFORE DONE"
                         print self.elevators[src]['work']
 
