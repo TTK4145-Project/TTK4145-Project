@@ -22,6 +22,9 @@ class Client:
         # only on moveToFloor
         self.current_action = "goto,2"
 
+    def delete(self):
+        self.elevator.elevator.__del__()
+
     def recv(self, msg):
         # msg[0]: type - msg[1]: floor
         msg = msg.rsplit(',')

@@ -42,6 +42,8 @@ class client:
 			if self.listen_thread.isAlive(): print "Failed to kill thread"
 			else: print "Successfully killed thread"
 		else: print "No thread"
+		if self.elevator_hardware:
+			self.elevator_hardware.delete()
 
 	def start(self): # Trying to connect to existing network
 		# Initialize sockets

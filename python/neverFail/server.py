@@ -61,6 +61,8 @@ class server:
 			else: print "Successfully killed thread"
 		else:
 			if redundancy.DEBUG: print "No thread"
+		if self.elevator_hardware:
+			self.elevator_hardware.delete()
 
 	def start(self):
 		self.udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
