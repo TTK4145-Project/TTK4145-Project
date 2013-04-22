@@ -22,6 +22,12 @@ class Client:
         # only on moveToFloor
         self.current_action = "goto,2"
 
+        # reset elevator position on startup
+        self.startup()
+
+    def startup(self):
+        self.elevator.moveToFloor(1)
+
     def delete(self):
         self.elevator.elevator.__del__()
 
