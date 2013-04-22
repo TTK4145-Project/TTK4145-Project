@@ -32,7 +32,7 @@ class client:
 	elevator_hardware = None
 
 	def __init__(self):
-		elevator_hardware = elevator_client.Client(self.send)
+		self.elevator_hardware = elevator_client.Client(self.send)
 
 	def delete(self):
 		self.running = False
@@ -179,6 +179,7 @@ class client:
 
 						if commands != None:
 							for command in commands.split(redundancy.command_split):
+								print "Received command:", command
 								self.elevator_hardware.recv(command)
 								pass # Call tricode recv(command)
 

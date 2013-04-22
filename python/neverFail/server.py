@@ -88,6 +88,10 @@ class server:
 			msg, address = result[0][0].recvfrom(self.bufSize)
 			print msg, " from ", address
 
+			if self.client_list[address[0]] != None:
+				print "Already connected to", address[0]
+				continue
+
 			if address[0] == self.my_ip: continue
 
 			if msg != self.broadcast_message:
