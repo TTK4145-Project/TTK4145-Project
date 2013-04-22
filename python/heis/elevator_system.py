@@ -16,8 +16,6 @@ class System:
         if src not in self.elevators:
             self.elevators[src]= {'current_floor': None, 'direction': None, 'work': []}
 
-
-
         # message contains  whatbutton(in/out/stop/obstruction/floorupdate),whatfloor([1-9]*),others(up/down etc)
         msg = msg.rsplit(',')
 
@@ -86,15 +84,12 @@ class System:
         self.send_to = send
 
     def get_elevator_task(self, elevator):
-
         pass
-
 
     def client_disconnected(self, src):
         if src in self.elevators:
             self.inactive_elevators[src] = self.elevators[src]
             del self.elevators[src]
-
 
     def client_reconnected(self, src):
         if src in self.inactive_elevators:

@@ -9,8 +9,8 @@ class Client:
 
         self.elevator = elevatorwrapper.ElevatorWrapper()
 
-        self.elevator.addButtonListener(self.button_listener())
-        self.elevator.addFloorListener(self.floor_listener())
+        self.elevator.addButtonListener(self.button_listener)
+        self.elevator.addFloorListener(self.floor_listener)
 
         # addListener(INPUT.STOP, self.stopstruction)
         # addListener(INPUT.OBSTRUCTION, self.stopstruction)
