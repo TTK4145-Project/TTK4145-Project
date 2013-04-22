@@ -54,7 +54,7 @@ class Client:
 
     def floor_listener(self, floor):
 
-        # print "Current floor", self.current_floor
+        print "Current floor", self.current_floor
         if self.current_floor != floor:
             self.current_floor = floor
             self.send_event("update,%s,%s" % (self.direction, floor))
