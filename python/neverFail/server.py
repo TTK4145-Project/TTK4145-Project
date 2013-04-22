@@ -173,6 +173,7 @@ class server:
 					self.client_list[client] = None
 					self.client_synch[client] = False
 					print "Client dropped: ", client, "Cause:", sys.exc_info()[0], traceback.print_tb(sys.exc_info()[2])
+					print sys.exc_info()[1]
 					self.elevators.client_disconnected(client)
 					# Call tricode client dropped
 			for message in self.self_recv_queue:

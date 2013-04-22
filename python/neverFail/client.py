@@ -200,6 +200,7 @@ class client:
 						# Something failed, try to take over?
 						print "Fail inner:", sys.exc_info()[1]
 						print traceback.print_tb(sys.exc_info()[2])
+						print sys.exc_info()[1]
 						self.running = False
 						threading.Thread(target=self.relocate_server).start()
 						continue
@@ -207,6 +208,7 @@ class client:
 
 			except:
 				print "Read fail"
+				print sys.exc_info()[1]
 				self.running = False
 				threading.Thread(target=self.relocate_server).start()
 				# TODO: Try to take over
