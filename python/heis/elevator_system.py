@@ -82,6 +82,8 @@ class System:
 
         return current_elevator
 
+    def set_send(self, send):
+        self.send_to = send
 
     def get_elevator_task(self, elevator):
 
