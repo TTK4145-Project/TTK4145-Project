@@ -40,13 +40,12 @@ class server:
 			self.send_queue[key] = []
 		self.client_synch = client_synch
 		self.my_ip = my_ip
+		self.elevators = elevator_system.System(self.send_to)
 		if elevators == None:
 			print "Setting up new system"
-			self.elevators = elevator_system.System(self.send_to)
 		else:
 			print "Restoring old system"
-			self.elevators = elevators
-			self.elevators.set_send(self.send_to)
+			self.elevators.put_pickle(elevators)
 
 		if elevator_hardware == None:
 			self.elevator_hardware = elevator_client.Client(self.send)
@@ -141,9 +140,9 @@ class server:
 
 				try:
 					# If commands, pad with those in send
-					if not len(self.send_queue[client]): conn.send(redundancy.synchronize_prefix + pickle.dumps((self.client_synch, self.elevators)))
+					if not len(self.send_queue[client]): conn.send(redundancy.synchronize_prefix + pickle.dumps((self.client_synch, self.elevators.get_pickle())))
 					else: 
-						msg = redundancy.synchronize_prefix + pickle.dumps((self.client_synch, self.elevators)) + redundancy.command_prefix
+						msg = redundancy.synchronize_prefix + pickle.dumps((self.client_synch, self.elevators.get_pickle())) + redundancy.command_prefix
 						for command in self.send_queue[client]:
 							msg += command + redundancy.command_split
 						msg = msg[:-len(redundancy.command_split)]
