@@ -168,6 +168,7 @@ class server:
 						raise Exception("Not ack")
 					if len(msg) > len(redundancy.ack_prefix):
 						msg = msg[len(redundancy.ack_prefix):]
+						print "Splitting up and receiving:", msg
 						for event in msg.split(redundancy.event_split):
 							self.elevators.recv(event, client)
 							pass # Call tricode recv(msg, client)
