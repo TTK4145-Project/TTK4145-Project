@@ -4,6 +4,8 @@ from redundancy import redundancy
 from mutex import mutex
 from collections import deque
 from package import package
+import elevator_system
+import elevator_client
 
 class server:
 	UDPport = redundancy.UDPport
@@ -28,12 +30,27 @@ class server:
 
 	my_ip = None
 
-	def __init__(self, client_list=[], client_synch=dict(), my_ip=None, elevator=None):
+	elevators = None
+	elevator_hardware = None
+
+	def __init__(self, client_list=[], client_synch=dict(), my_ip=None, elevators=None, elevator_hardware=None):
 		for key in client_list:
 			self.client_list[key] = None
 			self.send_queue[key] = []
 		self.client_synch = client_synch
 		self.my_ip = my_ip
+		if elevators == None:
+			print "Setting up new system"
+			self.elevator = elevator_system.System()
+		else:
+			print "Restoring old system"
+			self.elevators = elevators
+			self.elevators.set_send(self.send_to)
+
+		if elevator_hardware == None:
+			self.elevator_hardware = elevator_client.Client(self.send)
+		else:
+			self.elevator_hardware = elevator_hardware
 
 	def delete(self):
 		self.running = False
@@ -91,8 +108,8 @@ class server:
 					self.send_queue[self.my_ip] = []
 				self.send_queue[address[0]] = []
 				self.client_list[address[0]] = tcp
+				self.elevators.client_reconnected(address[0]) # Call tricode client connected
 				self.client_mutex.unlock()
-				# Call tricode client connected
 			except:
 				self.client_mutex.unlock()
 				print traceback.print_tb(sys.exc_info()[2])
@@ -110,7 +127,8 @@ class server:
 			for client in self.client_list:
 				if client == self.my_ip: # No synchronization required
 					for command in self.send_queue[client]:
-						pass # Call tricode recv(msg, client)
+						self.elevator_hardware.recv(msg)
+						pass # Call tricode recv(msg)
 					continue
 
 				conn = self.client_list[client]
@@ -119,9 +137,9 @@ class server:
 
 				try:
 					# If commands, pad with those in send
-					if not len(self.send_queue[client]): conn.send(redundancy.synchronize_prefix + pickle.dumps((self.client_synch,"serialized system here")))
+					if not len(self.send_queue[client]): conn.send(redundancy.synchronize_prefix + pickle.dumps((self.client_synch, self.elevators)))
 					else: 
-						msg = redundancy.synchronize_prefix + pickle.dumps((self.client_synch,"serialized system here")) + redundancy.command_prefix
+						msg = redundancy.synchronize_prefix + pickle.dumps((self.client_synch, self.elevators)) + redundancy.command_prefix
 						for command in self.send_queue[client]:
 							msg += command + redundancy.command_split
 						msg = msg[:-len(redundancy.command_split)]
@@ -134,16 +152,19 @@ class server:
 					if len(msg) > len(redundancy.ack_prefix):
 						msg = msg[len(redundancy.ack_prefix):]
 						for event in msg.split(redundancy.event_split):
+							self.elevators.recv(event, client)
 							pass # Call tricode recv(msg, client)
 					self.client_synch[client] = True
 				except:
 					self.client_list[client] = None
 					self.client_synch[client] = False
 					print "Client dropped: ", client, "Cause:", sys.exc_info()[0], traceback.print_tb(sys.exc_info()[2])
+					self.elevators.client_disconnected(client)
 					# Call tricode client dropped
 			self.client_mutex.unlock()
 
 	def send(self, message):
+		self.elevators.recv(message, self.my_ip)
 		pass # Call tricode recv(msg)
 
 	def send_to(self, message, to):

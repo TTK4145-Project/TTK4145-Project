@@ -1,6 +1,7 @@
 import socket, threading, select, pickle, sys
 from time import sleep
 from redundancy import redundancy
+import elevator_client
 
 class client:
 	UDPport = redundancy.UDPport
@@ -26,6 +27,11 @@ class client:
 	send_queue = []
 
 	alive = True
+
+	elevator_hardware = None
+
+	def __init__(self):
+		elevator_hardware = elevator_client.Client(self.send)
 
 	def delete(self):
 		self.running = False
@@ -162,6 +168,7 @@ class client:
 
 						if commands != None:
 							for command in commands.split(redundancy.command_split):
+								self.elevator_hardware.recv(command)
 								pass # Call tricode recv(command)
 
 						if  not len(self.send_queue):
@@ -208,7 +215,8 @@ class client:
 						status = self.start()
 						if status: print "Failed to connect, trying next in line", status
 
-
+	def send(self, message):
+		self.send_queue.append(message)
 
 
 
