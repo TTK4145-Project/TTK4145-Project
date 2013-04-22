@@ -51,6 +51,7 @@ class server:
 			self.elevator_hardware = elevator_client.Client(self.send)
 		else:
 			self.elevator_hardware = elevator_hardware
+			self.elevator_hardware.set_send(self.send)
 
 	def delete(self):
 		self.running = False
@@ -134,7 +135,7 @@ class server:
 			while not self.client_mutex.testandset(): sleep(0.1)
 			for client in self.client_list:
 				if client == self.my_ip: # No synchronization required
-					print "Sending commands to myself:"
+					if len(self.send_queue[client]): print "Sending commands to myself:"
 					try:
 						for command in self.send_queue[client]:
 							print command
