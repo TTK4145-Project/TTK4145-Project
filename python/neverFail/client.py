@@ -129,7 +129,13 @@ class client:
 		connaddr[1] = addr
 
 	def message_listener(self):
+		idletime = time.time()
 		while self.running:
+			if time.time() - idletime > redundancy.timeout:
+				print "Timeout!"
+				self.running = False
+				threading.Thread(target=self.relocate_server).start()
+				break
 			sleep(0.1)
 			try:
 				#print "Server:", self.server
@@ -183,6 +189,7 @@ class client:
 							conn.send(msg)
 							self.send_queue = []
 						print "Synchronized"
+						idletime = time.time()
 					except:
 						# Something failed, try to take over?
 						print "Fail inner:", sys.exc_info()[1]
