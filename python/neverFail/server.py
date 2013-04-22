@@ -42,7 +42,7 @@ class server:
 		self.my_ip = my_ip
 		if elevators == None:
 			print "Setting up new system"
-			self.elevator = elevator_system.System(self.send_to)
+			self.elevators = elevator_system.System(self.send_to)
 		else:
 			print "Restoring old system"
 			self.elevators = elevators
