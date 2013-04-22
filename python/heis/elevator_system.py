@@ -106,7 +106,7 @@ class System:
             self.elevators[src] = self.inactive_elevators[src]
             del self.inactive_elevators[src]
         elif src not in self.elevators:
-            self.elevators = {'current_floor': None, 'direction': None, 'work': []}
+            self.elevators[src] = {'current_floor': None, 'direction': None, 'work': []}
 
     def get_pickle(self):
         anders = (self.elevators, self.inactive_elevators, self.active_orders)
