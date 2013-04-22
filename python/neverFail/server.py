@@ -51,6 +51,7 @@ class server:
 			self.elevator_hardware = elevator_client.Client(self.send)
 		else:
 			self.elevator_hardware = elevator_hardware
+			self.elevator_hardware.set_send(self.send)
 
 	def delete(self):
 		self.running = False
@@ -134,7 +135,7 @@ class server:
 			while not self.client_mutex.testandset(): sleep(0.1)
 			for client in self.client_list:
 				if client == self.my_ip: # No synchronization required
-					print "Sending commands to myself:"
+					if len(self.send_queue[client]): print "Sending commands to myself:"
 					try:
 						for command in self.send_queue[client]:
 							print command
@@ -172,6 +173,7 @@ class server:
 					self.client_list[client] = None
 					self.client_synch[client] = False
 					print "Client dropped: ", client, "Cause:", sys.exc_info()[0], traceback.print_tb(sys.exc_info()[2])
+					print sys.exc_info()[1]
 					self.elevators.client_disconnected(client)
 					# Call tricode client dropped
 			for message in self.self_recv_queue:
