@@ -61,7 +61,7 @@ class Client:
         print "New current floor:", self.current_floor
         # check if current floor is destination and poke system
 
-        if floor == self.current_action.rsplit(',')[1]:
+        if floor == int(self.current_action.rsplit(',')[1]):
             print 'I has done work %s' % self.current_action
             self.elevator.stop()
             self.send_event('done,%s' % self.current_action)
