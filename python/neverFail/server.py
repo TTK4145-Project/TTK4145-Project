@@ -100,8 +100,8 @@ class server:
 
 				print "Connected to", address[0]
 				tcp.send(self.broadcast_answer)
-				print "Client_synch:", self.client_synch
-				print "address:", address
+				#print "Client_synch:", self.client_synch
+				#print "address:", address
 				self.client_synch[address[0]] = False
 				if self.my_ip == None:
 					self.my_ip = tcp.getsockname()[0]
