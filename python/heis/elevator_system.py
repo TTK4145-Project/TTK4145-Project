@@ -24,12 +24,12 @@ class System:
         if msg[0] == 'in':
             floor = msg[1]
 
-            self.elevators[src]['work'].append(msg)
+            self.elevators[src]['work'].append('goto,%i' % floor)
 
-            if src in self.active_orders:
-                self.send_to('update,%s' % floor, src)
-            else:
-                self.send_to('goto,%s' % floor, src)
+            #if src in self.active_orders:
+                #self.send_to('update,%s' % floor, src)
+            #else:
+            self.send_to('goto,%s' % floor, src)
 
         elif msg[0] == 'out':
             floor = msg[1]
@@ -48,8 +48,8 @@ class System:
 
         elif msg[0] == 'update':
             print 'I get UPDATE'
-            self.elevators[src]['direction'] = msg[1]
-            self.elevators[src]['current_floor'] = msg[2]
+            self.elevators[src]['direction'] = int(msg[1])
+            self.elevators[src]['current_floor'] = int(msg[2])
 
         elif msg[0] == 'stop':
             pass
@@ -58,8 +58,8 @@ class System:
             pass
 
         elif msg[0] == 'done':
-            print "FRIST:"
-            if src in self.elevators or msg[1] in self.elevators[src]['work']:
+            print "FRIST:",src
+            if src in self.elevators and msg[1]+','+msg[2] in self.elevators[src]['work']:
                 if msg[1] in self.elevators[src]['work']:
                     for i, w in enumerate(self.elevators[src]['work']):
                         if w == msg[1]:
