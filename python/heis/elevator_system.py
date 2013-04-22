@@ -15,8 +15,8 @@ class System:
         # self.active_orders = {}
 
     def recv(self, msg, src):
-        if src not in self.elevators:
-            self.elevators[src]= {'current_floor': None, 'direction': None, 'work': []}
+        # if src not in self.elevators:
+            # self.elevators[src]= {'current_floor': None, 'direction': None, 'work': []}
 
         # message contains  whatbutton(in/out/stop/obstruction/floorupdate),whatfloor([1-9]*),others(up/down etc)
         msg = msg.rsplit(',')
