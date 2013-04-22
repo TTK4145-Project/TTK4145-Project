@@ -39,7 +39,7 @@ class System:
                 pass
 
             working_elevator = self.get_elevator(floor, direction)
-            self.active_orders[working_elevator].append(msg)
+            # self.active_orders[working_elevator].append(msg)
 
             self.send_to('light,%s' % floor, working_elevator)
             self.send_to('goto,%s' % floor, working_elevator)
