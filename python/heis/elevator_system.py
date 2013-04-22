@@ -77,7 +77,6 @@ class System:
         current_elevator = next(my_elevators)
 
         for elevator in my_elevators:
-
             ## do more magic here
             if self.elevators[elevator]['current_floor'] is None or self.elevators[current_elevator]['current_floor'] is None:
                 current_elevator = elevator
