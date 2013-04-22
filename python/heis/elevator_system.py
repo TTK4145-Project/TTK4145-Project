@@ -75,6 +75,9 @@ class System:
                 current_elevator = elevator
                 continue
 
+            print self.elevators
+            print self.elevators[elevator]['current_floor']
+            
             ## do more magic here
             if self.elevators[elevator]['current_floor'] == None:
                 current_elevator = elevator
