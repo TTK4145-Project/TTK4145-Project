@@ -76,9 +76,12 @@ class System:
                 continue
 
             ## do more magic here
-            if abs(elevator['current_floor'] - floor) < abs(current_elevator['current_floor'] - floor):
-                if elevator['direction'] == current_elevator['direction'] == direction:
-                    current_elevator = elevator
+            if elevator['current_floor'] is None:
+                current_elevator = elevator
+            else:
+                if abs(elevator['current_floor'] - floor) < abs(current_elevator['current_floor'] - floor):
+                    if elevator['direction'] == current_elevator['direction'] == direction:
+                        current_elevator = elevator
 
         return current_elevator
 
@@ -109,4 +112,3 @@ class System:
         self.elevators = anders[0]
         self.inactive_elevators = anders[1]
         self.active_orders = anders[2]
-        
