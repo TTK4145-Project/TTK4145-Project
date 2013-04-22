@@ -39,8 +39,10 @@ class Client:
             self.direction = 1 if msg[1] > self.current_floor else 0
             self.elevator.moveToFloor(int(msg[1]))
 
+        #TODO: not yet implemented
         elif msg[0] == 'update':
             self.queue.append(self.current_action)
+            self.current_action = 'goto,%s' % msg[1]
             self.current_action = 'goto,%s' % msg[1]
 
     def button_listener(self, where, what, floor, en, to):
@@ -57,15 +59,14 @@ class Client:
         print "Current floor:", self.current_floor
         if self.current_floor != floor:
             self.current_floor = floor
-            self.send_event("update,%s,%s" % (self.direction, floor))
+            self.send_event("update,%s,%s" % (floor, self.direction))
         print "New current floor:", self.current_floor
-        # check if current floor is destination and poke system
 
+        # check if current floor is destination and poke system
         if floor == int(self.current_action.rsplit(',')[1]):
             print 'I has done work %s' % self.current_action
             self.elevator.stop()
             self.send_event('done,%s' % self.current_action)
-        # if destination sel.send_event('done,%s' % self.queue.pop(0))
 
     def set_send(self, send):
         self.send_event = send

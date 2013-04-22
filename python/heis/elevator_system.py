@@ -8,32 +8,28 @@ class System:
 
         self.send_to = send
 
-        # self.order_queue = []
         self.active_orders = {}
 
         # self.orders = []
         # self.active_orders = {}
+        # self.order_queue = []
 
     def recv(self, msg, src):
-        # if src not in self.elevators:
-            # self.elevators[src]= {'current_floor': None, 'direction': None, 'work': []}
-
         # message contains  whatbutton(in/out/stop/obstruction/floorupdate),whatfloor([1-9]*),others(up/down etc)
-        msg = msg.rsplit(',')
+        event = msg.rsplit(',')
+        floor = int(event[1])
 
-        if msg[0] == 'in':
-            floor = msg[1]
+        if event[0] == 'in':
 
-            self.elevators[src]['work'].append('goto,%s' % floor)
+            self.elevators[src]['work'].append('goto,%i' % floor)
 
             #if src in self.active_orders:
                 #self.send_to('update,%s' % floor, src)
             #else:
-            self.send_to('goto,%s' % floor, src)
+            self.send_to('goto,%i' % floor, src)
 
-        elif msg[0] == 'out':
-            floor = msg[1]
-            direction = 1 if msg[2] == 'up' else 0
+        elif event[0] == 'out':
+            direction = 1 if event[2] == 'up' else 0
 
             if direction == 'up':
                 pass
@@ -43,34 +39,36 @@ class System:
             working_elevator = self.get_elevator(floor, direction)
             # self.active_orders[working_elevator].append(msg)
 
-            self.send_to('light,%s' % floor, working_elevator)
-            self.send_to('goto,%s' % floor, working_elevator)
+            self.send_to('light,%i' % floor, working_elevator)
+            self.send_to('goto,%i' % floor, working_elevator)
 
-        elif msg[0] == 'update':
+        elif event[0] == 'update':
             print 'I get UPDATE'
-            self.elevators[src]['direction'] = int(msg[1])
-            self.elevators[src]['current_floor'] = int(msg[2])
+            direction = int(event[2])
 
-        elif msg[0] == 'stop':
+            self.elevators[src]['direction'] = int(floor)
+            self.elevators[src]['current_floor'] = int(direction)
+
+        elif event[0] == 'stop':
             pass
 
-        elif msg[0] == 'obstruction':
+        elif event[0] == 'obstruction':
             pass
 
-        elif msg[0] == 'done':
-            print "FRIST:",src
-            if src in self.elevators and msg[1]+','+msg[2] in self.elevators[src]['work']:
+        elif event[0] == 'done':
+            if event[1]+','+event[2] in self.elevators[src]['work']:
                 for i, w in enumerate(self.elevators[src]['work']):
-                    if w == msg[1]+','+msg[2]:
+                    if w == event[1]+','+event[2]:
                         print "BEFORE DONE"
                         print self.elevators[src]['work']
+
                         del self.elevators[src]['work'][i]
+
                         print "AFTER  DONE"
                         print self.elevators[src]['work']
 
-
-        #self.send_to(current_event, working_elevator)
-
+    def remove_event_from_elevator(self):
+        pass
 
     def get_elevator(self, floor, direction):
         current_elevator = None
@@ -81,11 +79,8 @@ class System:
                 current_elevator = elevator
                 continue
 
-            print self.elevators
-            # print self.elevators[elevator]['current_floor']
-
             ## do more magic here
-            if self.elevators[elevator]['current_floor'] == None or self.elevators[current_elevator]['current_floor']:
+            if self.elevators[elevator]['current_floor'] is None or self.elevators[current_elevator]['current_floor'] is None:
                 current_elevator = elevator
             else:
                 if abs(int(self.elevators[elevator]['current_floor']) - int(floor)) < abs(int(self.elevators[current_elevator]['current_floor']) - int(floor)):
