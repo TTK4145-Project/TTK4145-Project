@@ -17,16 +17,16 @@ class System:
     def recv(self, msg, src):
         # message contains  whatbutton(in/out/stop/obstruction/floorupdate),whatfloor([1-9]*),others(up/down etc)
         event = msg.rsplit(',')
-        floor = int(event[1])
+        # floor = int(event[1])
 
         if event[0] == 'in':
 
-            self.elevators[src]['work'].append('goto,%i' % floor)
+            self.elevators[src]['work'].append('goto,%i' % int(event[1]))
 
             #if src in self.active_orders:
                 #self.send_to('update,%s' % floor, src)
             #else:
-            self.send_to('goto,%i' % floor, src)
+            self.send_to('goto,%i' % int(event[1]), src)
 
         elif event[0] == 'out':
             direction = 1 if event[2] == 'up' else 0
@@ -36,17 +36,17 @@ class System:
             elif direction == 'down':
                 pass
 
-            working_elevator = self.get_elevator(floor, direction)
+            working_elevator = self.get_elevator(int(event[1]), direction)
             # self.active_orders[working_elevator].append(msg)
 
-            self.send_to('light,%i' % floor, working_elevator)
-            self.send_to('goto,%i' % floor, working_elevator)
+            self.send_to('light,%i' % int(event[1]), working_elevator)
+            self.send_to('goto,%i' % int(event[1]), working_elevator)
 
         elif event[0] == 'update':
             print 'I get UPDATE'
             direction = int(event[2])
 
-            self.elevators[src]['direction'] = int(floor)
+            self.elevators[src]['direction'] = int(event[1])
             self.elevators[src]['current_floor'] = int(direction)
 
         elif event[0] == 'stop':
