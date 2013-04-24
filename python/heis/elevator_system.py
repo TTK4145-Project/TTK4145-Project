@@ -17,7 +17,6 @@ class System:
     def recv(self, msg, src):
         # message contains  whatbutton(in/out/stop/obstruction/floorupdate),whatfloor([1-9]*),others(up/down etc)
         event = msg.rsplit(',')
-        # floor = int(event[1])
 
         if event[0] == 'in':
 
@@ -38,6 +37,8 @@ class System:
 
             working_elevator = self.get_elevator(int(event[1]), direction)
             # self.active_orders[working_elevator].append(msg)
+
+            self.elevators[working_elevator]['work'].append('goto,%i' % int(event[1]))
 
             self.send_to('light,%i' % int(event[1]), working_elevator)
             self.send_to('goto,%i' % int(event[1]), working_elevator)
@@ -106,11 +107,11 @@ class System:
             self.elevators[src] = {'current_floor': None, 'direction': None, 'work': []}
 
     def get_pickle(self):
-        anders = (self.elevators, self.inactive_elevators, self.active_orders)
-        return pickle.dumps(anders)
+        p = (self.elevators, self.inactive_elevators, self.active_orders)
+        return pickle.dumps(p)
 
     def put_pickle(self, info):
-        anders = pickle.loads(info)
-        self.elevators = anders[0]
-        self.inactive_elevators = anders[1]
-        self.active_orders = anders[2]
+        p = pickle.loads(info)
+        self.elevators = p[0]
+        self.inactive_elevators = p[1]
+        self.active_orders = p[2]
