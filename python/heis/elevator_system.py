@@ -46,8 +46,8 @@ class System:
             print 'I get UPDATE'
             direction = int(event[2])
 
-            self.elevators[src]['direction'] = int(event[1])
-            self.elevators[src]['current_floor'] = int(direction)
+            self.elevators[src]['direction'] = int(direction)
+            self.elevators[src]['current_floor'] = int(event[1])
 
         elif event[0] == 'stop':
             pass
