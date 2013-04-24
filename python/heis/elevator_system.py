@@ -82,8 +82,8 @@ class System:
                 current_elevator = elevator
             else:
                 if abs(int(self.elevators[elevator]['current_floor']) - int(floor)) < abs(int(self.elevators[current_elevator]['current_floor']) - int(floor)):
-                    if self.elevators[elevator]['direction'] == self.elevators[current_elevator]['direction'] == direction:
-                        current_elevator = elevator
+                    # if self.elevators[elevator]['direction'] == self.elevators[current_elevator]['direction'] == direction:
+                    current_elevator = elevator
 
         return current_elevator
 

@@ -182,6 +182,7 @@ class server:
 					# Call tricode client dropped
 			for message in self.self_recv_queue:
 				self.elevators.recv(message, self.my_ip)
+			self.self_recv_queue = []
 			self.client_mutex.unlock()
 
 	def send(self, message):
