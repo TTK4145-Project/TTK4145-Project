@@ -1,0 +1,6 @@
+FORK = (get-> put-> FORK).
+PHIL = (sitdown->right.get->left.get-> eat->right.put->left.put->arise->PHIL).
+
+||DINERS(N=7)= forall [i:0..N-1]
+	(phil[i]:PHIL ||
+	{phil[i].left, phil[((i-1)+N)%N].right}::FORK).

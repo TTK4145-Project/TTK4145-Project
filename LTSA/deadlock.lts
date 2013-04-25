@@ -1,0 +1,4 @@
+
+CLOCK = (tick -> tock -> CLOCK).
+
+CLICK = (tock -> tick -> CLICK).
