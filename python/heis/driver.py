@@ -141,7 +141,7 @@ class Driver:
 
     def setButtonIndicator(self, floor, direction, onoff):
         if direction: # Up
-            io.setBit(OUTPUT.UP_LIGHTS[floor], onoff)
+            io.setBit(OUTPUT.UP_LIGHTS[floor-1], onoff)
         else: #Down
             io.setBit(OUTPUT.DOWN_LIGHTS[floor-1], onoff)
             
