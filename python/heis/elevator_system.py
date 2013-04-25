@@ -64,9 +64,6 @@ class System:
             else:
                 self.send_to(self.elevators[src][work][-1], src)
 
-    def remove_event_from_elevator(self):
-        pass
-
     def get_elevator(self, floor, direction):
         my_elevators = iter(self.elevators)
         current_elevator = next(my_elevators)
