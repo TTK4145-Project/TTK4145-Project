@@ -45,7 +45,7 @@ class Client:
             io.setBit(OUTPUT.FLOOR_LIGHTS[1], (int(msg[1])) / 2)
 
         elif msg[0] == 'goto':
-            io.setBit(OUTPUT.DOOR_OPEN, 0)
+            # io.setBit(OUTPUT.DOOR_OPEN, 0)
             # up: 1 - down: 0
             self.current_action = 'goto,%s' % int(msg[1])
             self.direction = 1 if msg[1] > self.current_floor else 0
@@ -73,7 +73,7 @@ class Client:
 
         # check if current floor is destination and poke system
         if floor == int(self.current_action.rsplit(',')[1]):
-            io.setBit(OUTPUT.DOOR_OPEN, 1)
+            # io.setBit(OUTPUT.DOOR_OPEN, 1)
             print 'I has done work %s' % self.current_action
             self.elevator.stop()
             self.send_event('done,%s' % self.current_action)
