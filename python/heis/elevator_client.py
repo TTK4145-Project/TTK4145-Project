@@ -41,15 +41,25 @@ class Client:
 
         if msg[0] == 'lighton':
             # turn on floor light
-            self.switch_lighting(OUTPUT.UP_LIGHTS, (int(msg[1])) % 2)
+            # self.switch_lighting(OUTPUT.UP_LIGHTS, (int(msg[1])) % 2)
             # io.setBit(OUTPUT.FLOOR_LIGHTS[0], (int(msg[1])) % 2)
             # io.setBit(OUTPUT.FLOOR_LIGHTS[1], (int(msg[1])) % 2)
-
+            pass
         elif msg[0] == 'lightoff':
             # turn off floor light
-            self.switch_lighting(OUTPUT.UP_LIGHTS, (int(msg[1])) / 2)
+            # self.switch_lighting(OUTPUT.UP_LIGHTS, (int(msg[1])) / 2)
             # io.setBit(OUTPUT.FLOOR_LIGHTS[0], (int(msg[1])) / 2)
             # io.setBit(OUTPUT.FLOOR_LIGHTS[1], (int(msg[1])) / 2)
+            pass
+        elif msg[0] == 'light_in_on':
+            if int(msg[1]) == 0:
+                io.setBit(OUTPUT.LIGHT_COMMAND1, 1)
+            elif int(msg[1]) == 1:
+                io.setBit(OUTPUT.LIGHT_COMMAND2, 1)
+            elif int(msg[1]) == 2:
+                io.setBit(OUTPUT.LIGHT_COMMAND3, 1)
+            elif int(msg[1]) == 3:
+                io.setBit(OUTPUT.LIGHT_COMMAND4, 1)
 
         elif msg[0] == 'goto':
             io.setBit(OUTPUT.DOOR_OPEN, 0)
@@ -79,18 +89,19 @@ class Client:
         print "New current floor:", self.current_floor
 
         self.switch_lighting(OUTPUT.IN_LIGHTS, 0)
-        if int(floor) == 0:
-            io.setBit(OUTPUT.LIGHT_COMMAND1, 1)
-        elif int(floor) == 1:
-            io.setBit(OUTPUT.LIGHT_COMMAND2, 1)
-        elif int(floor) == 2:
-            io.setBit(OUTPUT.LIGHT_COMMAND3, 1)
-        elif int(floor) == 3:
-            io.setBit(OUTPUT.LIGHT_COMMAND4, 1)
 
         # check if current floor is destination and poke system
         if floor == int(self.current_action.rsplit(',')[1]):
             io.setBit(OUTPUT.DOOR_OPEN, 1)
+
+            if floor == 0:
+                io.setBit(OUTPUT.LIGHT_COMMAND1, 0)
+            elif floor == 1:
+                io.setBit(OUTPUT.LIGHT_COMMAND2, 0)
+            elif floor == 2:
+                io.setBit(OUTPUT.LIGHT_COMMAND3, 0)
+            elif floor == 3:
+                io.setBit(OUTPUT.LIGHT_COMMAND4, 0)
 
             print 'I has done work %s' % self.current_action
             self.elevator.stop()

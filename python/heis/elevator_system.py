@@ -14,6 +14,9 @@ class System:
         if event[0] == 'in':
             self.elevators[src]['work'].append('goto,%i' % int(event[1]))
 
+            # light up in_light
+            self.send_to('light_in_on,%s' % event[1])
+
             if self.elevators[src]['running'] is False:
                 self.send_to('goto,%i' % int(event[1]), src)
                 self.elevators[src]['destination'] = int(event[1])
