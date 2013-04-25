@@ -131,8 +131,19 @@ class Driver:
 
     def setFloorIndicator(self,floor):
         """Sets the floor indicator light in a floor and turns off the others."""
-        self.setChannel(OUTPUT.FLOOR_LIGHTS[0], (floor-1)%2)
-        self.setChannel(OUTPUT.FLOOR_LIGHTS[1], (floor-1)/2)
+        #self.setChannel(OUTPUT.FLOOR_LIGHTS[0], (floor-1)%2)
+        #self.setChannel(OUTPUT.FLOOR_LIGHTS[1], (floor-1)/2)
+        if floor & 0x1: io.setBit(OUTPUT.FLOOR_IND1, 1)
+	else: io.setBit(OUTPUT.FLOOR_IND1, 0)
+
+        if floor & 0x2: io.setBit(OUTPUT.FLOOR_IND2, 1)
+        else: io.setBit(OUTPUT.FLOOR_IND2, 0)
+
+    def setButtonIndicator(self, floor, direction, onoff):
+        if direction: # Up
+            io.setBit(OUTPUT.UP_LIGHTS[floor-1], onoff)
+        else: #Down
+            io.setBit(OUTPUT.DOWN_LIGHTS[floor-1], onoff)
             
 driver = Driver()
 
@@ -143,4 +154,3 @@ if __name__ == '__main__':
         
     """When the given channel changes (INPUT.STOP), the given function is called (printValue)"""
     driver.addListener(INPUT.STOP, printValue)
-

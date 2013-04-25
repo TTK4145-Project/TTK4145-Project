@@ -63,6 +63,9 @@ class ElevatorWrapper:
         else: print "derp" """
 
         self.lastFloor = floor;
+	
+	print type(floor)
+	self.elevator.setFloorIndicator(floor)
 
         self.externalFloorListener(floor)
 
