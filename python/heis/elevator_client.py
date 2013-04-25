@@ -15,7 +15,6 @@ class Client:
         # addListener(INPUT.STOP, self.stopstruction)
         # addListener(INPUT.OBSTRUCTION, self.stopstruction)
 
-        self.queue = []
         self.current_floor = None
         self.direction = -1
 
@@ -47,7 +46,6 @@ class Client:
 
         #TODO: not yet implemented
         elif msg[0] == 'update':
-            self.queue.append(self.current_action)
             self.current_action = 'goto,%s' % msg[1]
             self.current_action = 'goto,%s' % msg[1]
 
