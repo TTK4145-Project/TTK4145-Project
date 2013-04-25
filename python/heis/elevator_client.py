@@ -19,7 +19,7 @@ class Client:
         self.direction = -1
 
         # only on moveToFloor
-        self.current_action = "goto,2"
+        self.current_action = "goto,2,1"
 
         # reset elevator position on startup
         self.startup()
@@ -60,8 +60,8 @@ class Client:
         elif msg[0] == 'goto':
             io.setBit(OUTPUT.DOOR_OPEN, 0)
             # up: 1 - down: 0
-            self.current_action = 'goto,%s' % int(msg[1])
             self.direction = 1 if msg[1] > self.current_floor else 0
+            self.current_action = 'goto,%s,%i' % (int(msg[1]), direction)
             self.elevator.moveToFloor(int(msg[1]))
 
             if self.current_floor == int(msg[1]):
