@@ -62,7 +62,7 @@ class System:
                 """
 
             # if work list is empty - set the running variable to False, else do next task
-            if len(self.elevators[src]['work']) <= 0:
+            if len(self.elevators[src]['work']) == 0:
                 self.elevators[src]['running'] = False
             else:
                 self.send_to(self.elevators[src][work][-1], src)
