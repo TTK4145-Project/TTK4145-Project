@@ -24,11 +24,6 @@ class System:
         elif event[0] == 'out':
             direction = 1 if event[2] == 'up' else 0
 
-            if direction == 'up':
-                pass
-            elif direction == 'down':
-                pass
-
             working_elevator = self.get_elevator(int(event[1]), direction)
             # self.active_orders[working_elevator].append(msg)
 
