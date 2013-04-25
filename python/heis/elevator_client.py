@@ -28,6 +28,8 @@ class Client:
         for chan in channels:
             io.setBit(chan, val)
 
+    def stopstruction(self, en, to): # TODO: en, to
+        self.elevator.stop()
 
     def startup(self):
         self.elevator.moveToFloor(1)

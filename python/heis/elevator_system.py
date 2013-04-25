@@ -65,11 +65,6 @@ class System:
 
             if work in self.elevators[src]['work']:
                 self.elevators[src]['work'] = filter (lambda w: w != work, self.elevators[src]['work'])
-                #for i, w in enumerate(self.elevators[src['work']]):
-                #    if w == work:
-                #        del self.elevators[src]['work'][i]
-                # delete any records of finished work (removes duplicates from queue/history)
-                # del self.elevators[src]['work'][self.elevators[src]['work'].index(work)]
 
             # if work list is empty - set the running variable to False, else do next task
             if len(self.elevators[src]['work']) == 0:
