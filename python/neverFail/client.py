@@ -88,7 +88,6 @@ class client:
 
 		conn, addr = connaddr[0], connaddr[1]
 
-		#print "Receiving"
 		msg = conn.recv(self.bufSize)
 		print "Received:", msg, "from", addr
 
@@ -109,11 +108,6 @@ class client:
 		self.running = True
 		self.listen_thread = threading.Thread(target=self.message_listener)
 		self.listen_thread.start()
-
-		# Ask for client list
-		#conn.send(redundancy.client_request)
-		#clients = conn.recv(self.bufSize)
-		#print pickle.loads(clients)
 
 		while self.running: self.listen_thread.join(0.5)
 
@@ -137,83 +131,60 @@ class client:
 	def message_listener(self):
 		idletime = time.time()
 		while self.running:
-			if time.time() - idletime > redundancy.timeout:
+			if time.time() - idletime > redundancy.timeout * 2.0:			# Checking for server timeout
 				print "Timeout!"
-				self.running = False
-				threading.Thread(target=self.relocate_server).start()
+				self.running = False										# Make loop stop at next iteration
+				threading.Thread(target=self.relocate_server).start()		# Start thread for reconnection / relocation of server
 				break
 			sleep(0.1)
 			try:
-				#print "Server:", self.server
 				read, write, error = select.select([self.server[1]], [], [], self.timeout)
 
-				if len(read):
-					#print "Event: ", len(read)
-					pass
-				else: continue
+				if not len(read): continue
 
 				conn = read[0]
 
-				index = conn.getpeername()[0]
 				msg = conn.recv(self.bufSize)
-				if len(msg): 
-					#print "Received command \"", msg, "\""
-					pass
-				else:
+				if not len(msg): 
 					conn.close()
-					# TODO: Try to take over
-					#del self.client_list[index]
-					continue
+					raise Exception("Empty message received")
 
-				# call tricode
-				if msg.startswith(redundancy.synchronize_prefix):
-					try:
-						msg = msg[len(redundancy.synchronize_prefix):]
-						synch = None
-						commands = None
-						if msg.find(redundancy.command_prefix) != -1:
-							synch, commands = msg.split(redundancy.command_prefix)
-						else:
-							synch = msg
-						self.server_synch = pickle.loads(synch)
-						#print "Server synch:", self.server_synch
+				if not msg.startswith(redundancy.synchronize_prefix):		# Check that we are receiving a synchronization
+					conn.close()
+					raise Exception("Not a synchronization")
 
-						if commands != None:
-							for command in commands.split(redundancy.command_split):
-								print "Received command:", command
-								self.elevator_hardware.recv(command)
-								pass # Call tricode recv(command)
+				msg = msg[len(redundancy.synchronize_prefix):] 				# Strip away the prefix
 
-						if  not len(self.send_queue):
-							#print "Sending:", redundancy.ack_prefix
-							conn.send(redundancy.ack_prefix)
-						else:
-							msg = redundancy.ack_prefix
-							for event in self.send_queue:
-								msg += event + redundancy.event_split
-							msg = msg[:-len(redundancy.event_split)]
-							print "Sending:", msg
-							conn.send(msg)
-							self.send_queue = []
-						#print "Synchronized"
-						idletime = time.time()
-					except:
-						# Something failed, try to take over?
-						print "Fail inner:", sys.exc_info()[1]
-						print traceback.print_tb(sys.exc_info()[2])
-						print sys.exc_info()[1]
-						self.running = False
-						threading.Thread(target=self.relocate_server).start()
-						continue
+				synch = None
+				commands = None
 
+				if msg.find(redundancy.command_prefix) != -1:				# If message contains commands
+					synch, commands = msg.split(redundancy.command_prefix) 	# Split message
+				else:
+					synch = msg 											# There were no commands, only synch
+				self.server_synch = pickle.loads(synch) 					# Save the synchronized data
 
+				if commands != None:										# If we got commands
+					for command in commands.split(redundancy.command_split):# Iterate over commands
+						self.elevator_hardware.recv(command) 				# Send commands to local elevator
+
+				if not len(self.send_queue): 								# If we have no pending events from local elevator
+					conn.send(redundancy.ack_prefix)						# Just send a basic ack
+				else:
+					msg = redundancy.ack_prefix
+					for event in self.send_queue:							# For each pending event from local elevator
+						msg += event + redundancy.event_split 				# Pad message with event and splitter
+					msg = msg[:-len(redundancy.event_split)]				# Remove last splitter
+
+					conn.send(msg)											# Send ack with events to server
+					self.send_queue = []									# Empty the send queue
+				idletime = time.time() 										# Reset the timeout counter
 			except:
-				print "Read fail"
+				print "Read fail:", sys.exc_info()[1]
+				print traceback.print_tb(sys.exc_info()[2])
 				print sys.exc_info()[1]
-				self.running = False
-				threading.Thread(target=self.relocate_server).start()
-				# TODO: Try to take over
-				#del self.client_list[index]
+				self.running = False 										# Make the loop end next iteration
+				threading.Thread(target=self.relocate_server).start() 		# Start a thread for reconnection / relocation of server
 
 	def relocate_server(self):
 		# First just try to reconnect
@@ -223,16 +194,17 @@ class client:
 			# No connection, restore mode
 			client_synch = self.server_synch[0]
 
-			for client in client_synch:
-				if client_synch[client] and client != self.server[0]:
-					if client == self.my_address:
-						self.alive = False
+			for client in client_synch:										# Iterate over connected clients
+				if client_synch[client] and client != self.server[0]: 		# Check that client is synchronized and not the server that crashed
+					if client == self.my_address: 							# Is it me?
+						self.alive = False									# Killing me(client), trying to take over as server in main.py
+						break
 					else:
-						status = self.start()
+						status = self.start() 								# Trying to connect to new server
 						if status: print "Failed to connect, trying next in line", status
 
 	def send(self, message):
-		self.send_queue.append(message)
+		self.send_queue.append(message) 									# Append event to outgoing queue to be processed by message_listener
 
 
 
