@@ -21,25 +21,16 @@ class System:
                 e_current_floor = int(self.elevators[src]['current_floor'])
 
                 # if order is between destination and current floor -> prioritize it first
-                tmp_dir = -2
                 if e_current_floor < int(event[1]):
-                    tmp_dir = 1
+                    if int(self.elevators[src]['destination']) > int(event[1]):
+                        self.send_to('goto,%i' % int(event[1]), src)
+                        self.elevators[src]['destination'] = int(event[1])
                 elif e_current_floor > int(event[1]):
-                    tmp_dir = 0
-
-                if tmp_dir == int(self.elevators[src]['direction']):
-                    if tmp_dir == 1:
-                        if int(self.elevators[src]['destination']) > int(event[1]):
-                            self.send_to('goto,%i' % int(event[1]), src)
-                            self.elevators[src]['destination'] = int(event[1])
-                    else:
-                        if int(self.elevators[src]['destination']) < int(event[1]):
-                            self.send_to('goto,%i' % int(event[1]), src)
-                            self.elevators[src]['destination'] = int(event[1])
+                    if int(self.elevators[src]['destination']) < int(event[1]):
+                        self.send_to('goto,%i' % int(event[1]), src)
+                        self.elevators[src]['destination'] = int(event[1])
 
             self.elevators[src]['running'] = True
-
-
 
         elif event[0] == 'out':
             direction = 1 if event[2] == 'up' else 0
@@ -48,11 +39,11 @@ class System:
 
             self.elevators[working_elevator]['work'].append('goto,%i' % int(event[1]))
 
-            #TODO iterate all elevator and turn on all lights
-            #self.send_to('light,%i' % int(event[1]), working_elevator)
+            # turn light on for all clients on given floor
+            for elevator in self.elevators:
+                self.send_to('lighton,%i' % int(event[1]), elevator)
 
             self.send_to('goto,%i' % int(event[1]), working_elevator)
-
             self.elevators[working_elevator]['destination'] = int(event[1])
             self.elevators[working_elevator]['running'] = True
 
@@ -63,10 +54,13 @@ class System:
         elif event[0] == 'done':
             work = event[1]+','+event[2]
 
+            # turn light off for all clients on given floor
+            for elevator in self.elevators:
+                self.send_to('lightoff,%i' % int(event[2]), elevator)
+
             if work in self.elevators[src]['work']:
                 # delete any records of finished work (removes duplicates from queue/history)
                 del self.elevators[src]['work'][self.elevators[src]['work'].index(work)]
-
 
             # if work list is empty - set the running variable to False, else do next task
             if len(self.elevators[src]['work']) == 0:
