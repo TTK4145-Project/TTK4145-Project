@@ -41,15 +41,11 @@ class Client:
 
         if msg[0] == 'lighton':
             # turn on floor light
-            # self.switch_lighting(OUTPUT.UP_LIGHTS, (int(msg[1])) % 2)
-            # io.setBit(OUTPUT.FLOOR_LIGHTS[0], (int(msg[1])) % 2)
-            # io.setBit(OUTPUT.FLOOR_LIGHTS[1], (int(msg[1])) % 2)
+            self.elevator.elevator.setButtonIndicator(int(msg[1]), int(msg[2]), 1)
             pass
         elif msg[0] == 'lightoff':
             # turn off floor light
-            # self.switch_lighting(OUTPUT.UP_LIGHTS, (int(msg[1])) / 2)
-            # io.setBit(OUTPUT.FLOOR_LIGHTS[0], (int(msg[1])) / 2)
-            # io.setBit(OUTPUT.FLOOR_LIGHTS[1], (int(msg[1])) / 2)
+            self.elevator.elevator.setButtonIndicator(int(msg[1]), int(msg[2]), 0)
             pass
         elif msg[0] == 'light_in_on':
             if int(msg[1]) == 0:
