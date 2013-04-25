@@ -25,13 +25,14 @@ class System:
 
             self.elevators[working_elevator]['work'].append('goto,%i' % int(event[1]))
 
-            self.send_to('light,%i' % int(event[1]), working_elevator)
+            #TODO iterate all elevator and turn on all lights
+            #self.send_to('light,%i' % int(event[1]), working_elevator)
+
             self.send_to('goto,%i' % int(event[1]), working_elevator)
 
             self.elevators[working_elevator]['running'] = True
 
         elif event[0] == 'update':
-            # print 'I get UPDATE'
             self.elevators[src]['direction'] = int(event[2])
             self.elevators[src]['current_floor'] = int(event[1])
 
