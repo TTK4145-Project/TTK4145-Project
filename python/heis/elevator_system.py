@@ -36,12 +36,6 @@ class System:
             self.elevators[src]['direction'] = int(event[2])
             self.elevators[src]['current_floor'] = int(event[1])
 
-        elif event[0] == 'stop':
-            pass
-
-        elif event[0] == 'obstruction':
-            pass
-
         elif event[0] == 'done':
             work = event[1]+','+event[2]
 
