@@ -44,11 +44,6 @@ class Client:
             self.direction = 1 if msg[1] > self.current_floor else 0
             self.elevator.moveToFloor(int(msg[1]))
 
-        #TODO: not yet implemented
-        elif msg[0] == 'update':
-            self.current_action = 'goto,%s' % msg[1]
-            self.current_action = 'goto,%s' % msg[1]
-
     def button_listener(self, where, what, floor, en, to):
         if where == "in":
             self.send_event('in,%s' % floor)
