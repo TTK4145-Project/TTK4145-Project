@@ -25,7 +25,6 @@ class System:
             direction = 1 if event[2] == 'up' else 0
 
             working_elevator = self.get_elevator(int(event[1]), direction)
-            # self.active_orders[working_elevator].append(msg)
 
             self.elevators[working_elevator]['work'].append('goto,%i' % int(event[1]))
 
