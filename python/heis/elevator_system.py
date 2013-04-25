@@ -15,7 +15,7 @@ class System:
             self.elevators[src]['work'].append('goto,%i' % int(event[1]))
 
             # light up in_light
-            self.send_to('light_in_on,%s' % event[1])
+            self.send_to('light_in_on,%s' % event[1], src)
 
             if self.elevators[src]['running'] is False:
                 self.send_to('goto,%i' % int(event[1]), src)
