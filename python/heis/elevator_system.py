@@ -4,9 +4,7 @@ class System:
     def __init__(self, send):
         self.elevators = {}
         self.inactive_elevators = {}
-
         self.send_to = send
-
         self.active_orders = {}
 
     def recv(self, msg, src):
@@ -24,7 +22,7 @@ class System:
         elif event[0] == 'out':
             direction = 1 if event[2] == 'up' else 0
 
-            working_elevator = self.get_elevator(int(event[1]), direction)
+            working_elevator = self.get_elevator(int(event[1]), int(direction))
 
             self.elevators[working_elevator]['work'].append('goto,%i' % int(event[1]))
 
