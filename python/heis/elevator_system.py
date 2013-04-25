@@ -44,7 +44,7 @@ class System:
 
             # turn light on for all clients on given floor
             for elevator in self.elevators:
-                self.send_to('lighton,%i' % int(event[1]), elevator)
+                self.send_to('lighton,%i,%i' % (int(event[1]), direction), elevator)
 
             self.send_to('goto,%i' % int(event[1]), working_elevator)
             self.elevators[working_elevator]['destination'] = int(event[1])
