@@ -56,10 +56,12 @@ class System:
 
         elif event[0] == 'done':
             work = event[1]+','+event[2]
+            
+            direction = int(event[3])
 
             # turn light off for all clients on given floor
             for elevator in self.elevators:
-                self.send_to('lightoff,%i' % int(event[2]), elevator)
+                self.send_to('lightoff,%i' % (int(event[2]), direction), elevator)
 
             if work in self.elevators[src]['work']:
                 self.elevators[src]['work'] = filter (lambda w: w != work, self.elevators[src]['work'])
