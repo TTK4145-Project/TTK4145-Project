@@ -88,7 +88,6 @@ class Client:
             self.send_event("update,%s,%s" % (floor, self.direction))
         print "New current floor:", self.current_floor
 
-        self.switch_lighting(OUTPUT.IN_LIGHTS, 0)
 
         # check if current floor is destination and poke system
         if floor == int(self.current_action.rsplit(',')[1]):
