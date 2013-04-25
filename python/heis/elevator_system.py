@@ -14,10 +14,9 @@ class System:
         if event[0] == 'in':
             self.elevators[src]['work'].append('goto,%i' % int(event[1]))
 
-            #TODO lag en sjekk for å finne ut om den er aktiv
-            self.send_to('goto,%i' % int(event[1]), src)
-
-            self.elevators[src]['running'] = True
+            if self.elevators[src]['running'] is False:
+                self.send_to('goto,%i' % int(event[1]), src)
+                self.elevators[src]['running'] = True
 
         elif event[0] == 'out':
             direction = 1 if event[2] == 'up' else 0
