@@ -46,6 +46,10 @@ class System:
             work = event[1]+','+event[2]
 
             if work in self.elevators[src]['work']:
+                # delete any records of finished work (removes duplicates from queue/history)
+                del self.elevators[src]['work'][self.elevators[src]['work'].index(work)]
+
+                """
                 for i, w in enumerate(self.elevators[src]['work']):
                     if w == work:
                         # print "BEFORE DONE"
@@ -55,6 +59,7 @@ class System:
 
                         # print "AFTER  DONE"
                         # print self.elevators[src]['work']
+                """
 
             # if work list is empty - set the running variable to False, else do next task
             if len(self.elevators[src]['work']) <= 0:
