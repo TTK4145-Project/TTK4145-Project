@@ -51,6 +51,10 @@ class Client:
             self.direction = 1 if msg[1] > self.current_floor else 0
             self.elevator.moveToFloor(int(msg[1]))
 
+            if self.current_floor == int(msg[1]):
+                print 'I will not move to %s' % self.current_action
+                self.send_event('done,%s' % self.current_action)
+
     def button_listener(self, where, what, floor, en, to):
         if where == "in":
             self.send_event('in,%s' % floor)
