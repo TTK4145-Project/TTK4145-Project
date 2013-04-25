@@ -61,7 +61,7 @@ class Client:
             io.setBit(OUTPUT.DOOR_OPEN, 0)
             # up: 1 - down: 0
             self.direction = 1 if msg[1] > self.current_floor else 0
-            self.current_action = 'goto,%s,%i' % (int(msg[1]), direction)
+            self.current_action = 'goto,%s,%i' % (int(msg[1]), self.direction)
             self.elevator.moveToFloor(int(msg[1]))
 
             if self.current_floor == int(msg[1]):
