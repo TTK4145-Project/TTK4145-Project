@@ -2,7 +2,6 @@ import pickle
 
 class System:
     def __init__(self, send):
-
         self.elevators = {}
         self.inactive_elevators = {}
 
@@ -10,22 +9,17 @@ class System:
 
         self.active_orders = {}
 
-        # self.orders = []
-        # self.active_orders = {}
-        # self.order_queue = []
-
     def recv(self, msg, src):
         # message contains  whatbutton(in/out/stop/obstruction/floorupdate),whatfloor([1-9]*),others(up/down etc)
         event = msg.rsplit(',')
 
         if event[0] == 'in':
-
             self.elevators[src]['work'].append('goto,%i' % int(event[1]))
 
-            #if src in self.active_orders:
-                #self.send_to('update,%s' % floor, src)
-            #else:
+            #TODO lag en sjekk for å finne ut om den er aktiv
             self.send_to('goto,%i' % int(event[1]), src)
+
+            self.elevators[src]['running'] = True
 
         elif event[0] == 'out':
             direction = 1 if event[2] == 'up' else 0
@@ -42,6 +36,8 @@ class System:
 
             self.send_to('light,%i' % int(event[1]), working_elevator)
             self.send_to('goto,%i' % int(event[1]), working_elevator)
+
+            self.elevators[working_elevator]['running'] = True
 
         elif event[0] == 'update':
             print 'I get UPDATE'
@@ -62,13 +58,19 @@ class System:
             if work in self.elevators[src]['work']:
                 for i, w in enumerate(self.elevators[src]['work']):
                     if w == work:
-                        print "BEFORE DONE"
-                        print self.elevators[src]['work']
+                        # print "BEFORE DONE"
+                        # print self.elevators[src]['work']
 
                         del self.elevators[src]['work'][i]
 
-                        print "AFTER  DONE"
-                        print self.elevators[src]['work']
+                        # print "AFTER  DONE"
+                        # print self.elevators[src]['work']
+
+            # if work list is empty - set the running variable to False, else do next task
+            if len(self.elevators[src]['work']) <= 0:
+                self.elevators[src]['running'] = False
+            else:
+                self.send_to(self.elevators[src][work][-1], src)
 
     def remove_event_from_elevator(self):
         pass
@@ -104,7 +106,7 @@ class System:
             self.elevators[src] = self.inactive_elevators[src]
             del self.inactive_elevators[src]
         elif src not in self.elevators:
-            self.elevators[src] = {'current_floor': None, 'direction': None, 'work': []}
+            self.elevators[src] = {'current_floor': None, 'direction': None, 'working': False, 'work': []}
 
     def get_pickle(self):
         p = (self.elevators, self.inactive_elevators, self.active_orders)
