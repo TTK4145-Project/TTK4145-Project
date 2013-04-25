@@ -40,10 +40,8 @@ class System:
             self.elevators[working_elevator]['running'] = True
 
         elif event[0] == 'update':
-            print 'I get UPDATE'
-            direction = int(event[2])
-
-            self.elevators[src]['direction'] = int(direction)
+            # print 'I get UPDATE'
+            self.elevators[src]['direction'] = int(event[2])
             self.elevators[src]['current_floor'] = int(event[1])
 
         elif event[0] == 'stop':
