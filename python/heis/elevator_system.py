@@ -68,7 +68,7 @@ class System:
                 self.elevators[src]['destination'] = -1
             else:
                 self.send_to(self.elevators[src]['work'][-1], src)
-                self.elevators[src]['destination'] = int(self.elevators[src][work][-1].rsplit(',')[1])
+                self.elevators[src]['destination'] = int(self.elevators[src]['work'][-1].rsplit(',')[1])
 
     def get_elevator(self, floor, direction):
         my_elevators = iter(self.elevators)
