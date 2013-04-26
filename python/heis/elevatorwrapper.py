@@ -83,7 +83,7 @@ class ElevatorWrapper:
 
     def stopstruction(self, en, to): # TODO: en, to
         self.elevator.stop()
-        self.lastFloor = self.lastFloor + (0.5 if self.direction else -0.5)
+        if self.lastFloor % 1.0 != 0.5 and self.getFloor() == None: self.lastFloor = self.lastFloor + (0.5 if self.direction else -0.5)
         print "Stopped, now at", self.lastFloor
 
     def isObstructed(self):

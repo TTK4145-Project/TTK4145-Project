@@ -13,7 +13,7 @@ class Client:
         self.elevator.addFloorListener(self.floor_listener)
 
         # addListener(INPUT.STOP, self.stopstruction)
-        self.elevator.addListener(INPUT.OBSTRUCTION, self.stopstruction)
+        # self.elevator.addListener(INPUT.OBSTRUCTION, self.stopstruction)
 
         self.current_floor = None
         self.direction = -1
