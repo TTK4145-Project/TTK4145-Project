@@ -152,8 +152,10 @@ class client:
 
 				msg = conn.recv(self.bufSize)
 				if not len(msg): 
-					conn.close()
-					raise Exception("Empty message received")
+					#conn.close()
+					#raise Exception("Empty message received")
+					print "Empty message received"
+					continue
 
 				if not msg.startswith(redundancy.synchronize_prefix):		# Check that we are receiving a synchronization
 					conn.close()
