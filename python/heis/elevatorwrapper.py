@@ -16,14 +16,15 @@ class ElevatorWrapper:
         self.destination = 0
         self.externalFloorListener = None
         self.stop = self.elevator.stop
+        self.addListener = self.elevator.addListener
 
         for i, floor in enumerate(INPUT.SENSORS):
             self.elevator.addListener(floor, partial(self.floorListener, i))
 
-        addListener = self.elevator.addListener
 
-        addListener(INPUT.STOP, self.stopstruction)
-        addListener(INPUT.OBSTRUCTION, self.stopstruction)
+
+        self.addListener(INPUT.STOP, self.stopstruction)
+        self.addListener(INPUT.OBSTRUCTION, self.stopstruction)
 
     def moveToFloor(self, floor):
         if self.elevator.readChannel(INPUT.OBSTRUCTION):
@@ -98,19 +99,18 @@ class ElevatorWrapper:
         return self.elevator.getCurrentFloor()
 
     def addButtonListener(self, listener):
-        addListener = self.elevator.addListener
-        addListener(INPUT.FLOOR_UP1, partial(listener, "out", "up", 0))
-        addListener(INPUT.FLOOR_UP2, partial(listener, "out", "up", 1))
-        addListener(INPUT.FLOOR_UP3, partial(listener, "out", "up", 2))
+        self.addListener(INPUT.FLOOR_UP1, partial(listener, "out", "up", 0))
+        self.addListener(INPUT.FLOOR_UP2, partial(listener, "out", "up", 1))
+        self.addListener(INPUT.FLOOR_UP3, partial(listener, "out", "up", 2))
 
-        addListener(INPUT.FLOOR_DOWN2, partial(listener, "out", "down", 1))
-        addListener(INPUT.FLOOR_DOWN3, partial(listener, "out", "down", 2))
-        addListener(INPUT.FLOOR_DOWN4, partial(listener, "out", "down", 3))
+        self.addListener(INPUT.FLOOR_DOWN2, partial(listener, "out", "down", 1))
+        self.addListener(INPUT.FLOOR_DOWN3, partial(listener, "out", "down", 2))
+        self.addListener(INPUT.FLOOR_DOWN4, partial(listener, "out", "down", 3))
 
-        addListener(INPUT.FLOOR_COMMAND1, partial(listener, "in", "", 0))
-        addListener(INPUT.FLOOR_COMMAND2, partial(listener, "in", "", 1))
-        addListener(INPUT.FLOOR_COMMAND3, partial(listener, "in", "", 2))
-        addListener(INPUT.FLOOR_COMMAND4, partial(listener, "in", "", 3))
+        self.addListener(INPUT.FLOOR_COMMAND1, partial(listener, "in", "", 0))
+        self.addListener(INPUT.FLOOR_COMMAND2, partial(listener, "in", "", 1))
+        self.addListener(INPUT.FLOOR_COMMAND3, partial(listener, "in", "", 2))
+        self.addListener(INPUT.FLOOR_COMMAND4, partial(listener, "in", "", 3))
 
     def addFloorListener(self, listener):
         self.externalFloorListener = listener

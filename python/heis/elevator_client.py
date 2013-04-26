@@ -13,7 +13,8 @@ class Client:
         self.elevator.addFloorListener(self.floor_listener)
 
         # addListener(INPUT.STOP, self.stopstruction)
-        # self.elevator.addListener(INPUT.OBSTRUCTION, self.stopstruction)
+        self.elevator.addListener(INPUT.OBSTRUCTION, self.stopstruction)
+
 
         self.current_floor = None
         self.direction = -1
@@ -29,6 +30,9 @@ class Client:
             io.setBit(chan, val)
 
     def stopstruction(self, en, to): # TODO: en, to
+        # self.elevator.stop()
+        # stop_floor = self.elevator.lastFloor % 1.0 != 0.5 and self.elevator.getFloor() == None: self.elevator.lastFloor = self.elevator.lastFloor + (0.5 if self.elevator.direction else -0.5)
+        self.send_event('stop,%s' % self.elevator.lastFloor)
         self.elevator.stop()
 
     def startup(self):
@@ -69,6 +73,10 @@ class Client:
             if self.current_floor == int(msg[1]):
                 print 'I will not move to %s' % self.current_action
                 self.send_event('done,%s' % self.current_action)
+
+        elif msg[0] == 'stop':
+            self.elevator.stop()
+            self.send_event('done,%s' % msg[0]+msg[1])
 
     def button_listener(self, where, what, floor, en, to):
         if where == "in":
