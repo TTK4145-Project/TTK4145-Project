@@ -70,6 +70,14 @@ class Client:
             self.elevator.moveToFloor(int(msg[1]))
 
             if self.current_floor == int(msg[1]):
+                if self.current_floor == 0:
+                    io.setBit(OUTPUT.LIGHT_COMMAND1, 0)
+                elif self.current_floor == 1:
+                    io.setBit(OUTPUT.LIGHT_COMMAND2, 0)
+                elif self.current_floor == 2:
+                    io.setBit(OUTPUT.LIGHT_COMMAND3, 0)
+                elif self.current_floor == 3:
+                    io.setBit(OUTPUT.LIGHT_COMMAND4, 0)
                 print 'I will not move to %s' % self.current_action
                 self.send_event('done,%s,%s' % (self.current_action, self.elevator.direction))
 
