@@ -76,7 +76,7 @@ class Client:
 
         elif msg[0] == 'stop':
             self.elevator.stop()
-            self.send_event('done,%s' % msg[0]+msg[1])
+            self.send_event('done,%s' % msg[0]+','+msg[1])
 
     def button_listener(self, where, what, floor, en, to):
         if where == "in":
