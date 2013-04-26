@@ -71,8 +71,15 @@ class System:
                 self.elevators[src]['running'] = False
                 self.elevators[src]['destination'] = -1
             else:
-                self.send_to(self.elevators[src]['work'][-1], src)
-                self.elevators[src]['destination'] = int(self.elevators[src]['work'][-1].rsplit(',')[1])
+                # prevent from continuing from queue if stop button is clicked
+                if self.elevators[src]['running'] is True:
+                    self.send_to(self.elevators[src]['work'][-1], src)
+                    self.elevators[src]['destination'] = int(self.elevators[src]['work'][-1].rsplit(',')[1])
+
+        elif event[0] == 'stop':
+            self.elevators[src]['work'].append('stop,%i' % int(event[1]))
+            self.elevators[src]['running'] = False
+            self.send_to('stop,%s' % int(event[1]), src)
 
     def get_elevator(self, floor, direction):
         my_elevators = iter(self.elevators)
