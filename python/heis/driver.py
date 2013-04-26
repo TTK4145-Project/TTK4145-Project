@@ -148,8 +148,10 @@ class Driver:
 
     def setButtonIndicator(self, floor, direction, onoff):
         if direction: # Up
-            io.setBit(OUTPUT.UP_LIGHTS[floor-1], onoff)
+            if floor == 3: return
+            io.setBit(OUTPUT.UP_LIGHTS[floor], onoff)
         else: #Down
+            if floor == 0: return
             io.setBit(OUTPUT.DOWN_LIGHTS[floor-1], onoff)
             
 driver = Driver()
