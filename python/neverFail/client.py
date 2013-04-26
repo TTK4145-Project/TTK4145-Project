@@ -102,7 +102,7 @@ class client:
 
 		print "Connected"
 
-		self.tcp.close()
+		self.tcp.close() # Stop listening for connections
 
 		# Enter client code
 		self.running = True
@@ -142,7 +142,7 @@ class client:
 
 				if not len(read): continue
 
-				conn = read[0]
+				conn = read[0] 												# Convenience variable
 
 				msg = conn.recv(self.bufSize)
 				if not len(msg): 

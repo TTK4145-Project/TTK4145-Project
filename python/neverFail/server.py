@@ -152,7 +152,7 @@ class server:
 					if conn == None: continue 						# Disconnected client, do nothing
 
 					if not len(self.send_queue[client]): 			# If there are no pending commands
-						conn.send(redundancy.synchronize_prefix + synch_package
+						conn.send(redundancy.synchronize_prefix + synch_package)
 					else:
 						msg = redundancy.synchronize_prefix + synch_package + redundancy.command_prefix
 
