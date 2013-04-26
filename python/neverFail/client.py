@@ -192,6 +192,7 @@ class client:
 		status = self.start()
 		if status:
 			# No connection, restore mode
+			self.delete()
 			client_synch = self.server_synch[0]
 
 			for client in client_synch:										# Iterate over connected clients
