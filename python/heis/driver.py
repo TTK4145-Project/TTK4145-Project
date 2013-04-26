@@ -141,7 +141,7 @@ class Driver:
         #self.setChannel(OUTPUT.FLOOR_LIGHTS[0], (floor-1)%2)
         #self.setChannel(OUTPUT.FLOOR_LIGHTS[1], (floor-1)/2)
         if floor & 0x1: io.setBit(OUTPUT.FLOOR_IND1, 1)
-	else: io.setBit(OUTPUT.FLOOR_IND1, 0)
+        else: io.setBit(OUTPUT.FLOOR_IND1, 0)
 
         if floor & 0x2: io.setBit(OUTPUT.FLOOR_IND2, 1)
         else: io.setBit(OUTPUT.FLOOR_IND2, 0)
