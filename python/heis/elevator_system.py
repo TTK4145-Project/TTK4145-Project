@@ -112,9 +112,6 @@ class System:
 
             # filter out the outer orders and delegate them to the other elevators
 
-    def recover(self):
-        pass
-
     def client_reconnected(self, src):
         if src in self.inactive_elevators:
             self.elevators[src] = self.inactive_elevators[src]
