@@ -201,7 +201,11 @@ class client:
 						break
 					else:
 						status = self.start() 								# Trying to connect to new server
-						if status: print "Failed to connect, trying next in line", status
+						if status:
+							print "Failed to connect, trying next in line", status
+							self.delete()
+						else: 
+							break
 
 	def send(self, message):
 		self.send_queue.append(message) 									# Append event to outgoing queue to be processed by message_listener
