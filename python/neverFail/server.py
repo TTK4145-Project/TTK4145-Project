@@ -126,7 +126,7 @@ class server:
 			except:
 				self.client_mutex.unlock() 								# Unlock the client list mutex in case we failed
 				print traceback.print_tb(sys.exc_info()[2])
-				print sys.exc_info()[0]
+				print sys.exc_info()[0], sys.exc_info()[1]
 				print "Failed to connect to", address[0]
 				continue
 
