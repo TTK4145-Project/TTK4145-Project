@@ -77,7 +77,10 @@ class System:
                     self.elevators[src]['destination'] = int(self.elevators[src]['work'][-1].rsplit(',')[1])
 
         elif event[0] == 'stop':
-            self.elevators[src]['work'].append('stop,%i' % int(event[1]))
+            try:
+                self.elevators[src]['work'].append('stop,%i' % int(event[1]))
+            except:
+                self.elevators[src]['work'].append('stop,%i' % float(event[1]))
             self.elevators[src]['running'] = False
             self.send_to('stop,%s' % event[1], src)
 
