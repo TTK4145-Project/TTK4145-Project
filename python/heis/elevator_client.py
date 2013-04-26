@@ -71,7 +71,7 @@ class Client:
 
             if self.current_floor == int(msg[1]):
                 print 'I will not move to %s' % self.current_action
-                self.send_event('done,%s,%s' % (self.current_action, self.elevator.direction)
+                self.send_event('done,%s,%s' % (self.current_action, self.elevator.direction))
 
         elif msg[0] == 'stop':
             self.elevator.stop()
