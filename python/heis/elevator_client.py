@@ -2,7 +2,6 @@ import elevatorwrapper
 from channels import *
 from IO import io
 
-
 class Client:
     def __init__(self, send):
         self.send_event = send
@@ -110,7 +109,7 @@ class Client:
 
             print 'I has done work %s' % self.current_action
             self.elevator.stop()
-            self.send_event('done,%s' % self.current_action)
+            self.send_event('done,%s,%s' % (self.current_action, self.elevator.direction))
 
     def set_send(self, send):
         self.send_event = send

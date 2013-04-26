@@ -79,7 +79,7 @@ class System:
         elif event[0] == 'stop':
             self.elevators[src]['work'].append('stop,%i' % int(event[1]))
             self.elevators[src]['running'] = False
-            self.send_to('stop,%s' % int(event[1]), src)
+            self.send_to('stop,%s' % event[1], src)
 
     def get_elevator(self, floor, direction):
         my_elevators = iter(self.elevators)
