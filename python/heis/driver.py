@@ -32,6 +32,8 @@ class Driver:
     readChannel = io.readBit
     setChannel = io.setBit
 
+    moving = False
+
     def setChannels(self, channels, value):
         for channel in channels:
             io.setBit(channel, value)
@@ -49,6 +51,8 @@ class Driver:
         direction -- OUTPUT.MOTOR_UP or OUTPUT.MOTOR_DOWN, tells the direction to move in.
         speed     -- Defaults to 1000. Used for debugging purposes only.
         """
+        self.moving = True
+
         self.direction = direction
         if (speed > 0):
             io.setBit(OUTPUT.MOTORDIR,direction)
@@ -60,6 +64,9 @@ class Driver:
     def stop(self):
         """Stops the elevator, and flips direction for smoother stopping."""
 		
+        if not self.moving: return
+        self.moving = False
+
         sleep(0.16)
         if self.direction is OUTPUT.MOTOR_UP:
             io.setBit(OUTPUT.MOTORDIR,OUTPUT.MOTOR_DOWN)
