@@ -75,7 +75,9 @@ class client:
 			read, write, error = select.select([self.tcp], [], [], self.timeout/3)
 			if len(read) > 0: break
 
-		if len(read) == 0: return 1 # Noone answered
+		if len(read) == 0:
+			print "No answer"
+			return 1 # Noone answered
 
 		connaddr = [None, None]
 
@@ -84,14 +86,18 @@ class client:
 		accept_thread.start()
 		accept_thread.join(self.timeout)
 
-		if connaddr[0] == None: return 2 # Could not establish a connection to the other end
+		if connaddr[0] == None:
+			print "Server did not connect to me"
+			return 2 # Could not establish a connection to the other end
 
 		conn, addr = connaddr[0], connaddr[1]
 
 		msg = conn.recv(self.bufSize)
 		print "Received:", msg, "from", addr
 
-		if msg != self.broadcast_answer: return 1 # Wrong message received, they are not elevators
+		if msg != self.broadcast_answer:
+			print "Wrong message received:", msg
+			return 1 # Wrong message received, they are not elevators
 		self.server[0] = addr[0]
 		self.server[1] = conn
 
