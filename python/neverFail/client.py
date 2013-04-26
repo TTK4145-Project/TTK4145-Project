@@ -209,6 +209,7 @@ class client:
 						self.alive = False									# Killing me(client), trying to take over as server in main.py
 						break
 					else:
+						print "Trying to connect to", client
 						status = self.start() 								# Trying to connect to new server
 						if status:
 							print "Failed to connect, trying next in line", status
