@@ -2,7 +2,7 @@
 class redundancy:
 	UDPport = 54545
 	TCPport = 54544
-	bufSize = 4096
+	bufSize = 4096*2
 	timeout = 3.0
 
 	broadcast_message = "I am elevator"
