@@ -71,11 +71,11 @@ class Client:
 
             if self.current_floor == int(msg[1]):
                 print 'I will not move to %s' % self.current_action
-                self.send_event('done,%s' % self.current_action)
+                self.send_event('done,%s,%s' % (self.current_action, self.elevator.direction)
 
         elif msg[0] == 'stop':
             self.elevator.stop()
-            self.send_event('done,%s' % msg[0]+','+msg[1])
+            self.send_event('done,%s,%s' % (msg[0]+','+msg[1], self.elevator.direction))
 
     def button_listener(self, where, what, floor, en, to):
         if where == "in":
